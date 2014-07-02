@@ -6,6 +6,8 @@
   "dependencies": {
     "express": "^4.4.5",
     "node-slack": "^0.0.3"
+    "body-parser": *,
+    "mongoose": *
   },
   "devDependencies": {},
   "scripts": {
