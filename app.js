@@ -659,7 +659,7 @@ app.post('/', function(req, res){
           res.json({text: "https://gist.github.com/andrewvy/7efb5655212593cde45e"});
           break;
       case "help":
-          slack.send({channel: pong.channel, text: "https://gist.github.com/andrewvy/d844b1c1fdbb89a4e0e1"});
+          res.json(({text: "https://gist.github.com/andrewvy/d844b1c1fdbb89a4e0e1"});
           break;
     	default:
     	    res.json({text: "I couldn't understand that command. Use 'pongbot help' to get a list of available commands."});
