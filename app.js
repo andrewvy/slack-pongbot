@@ -51,7 +51,7 @@ var Challenge = mongoose.model('Challenge', ChallengeSchema);
 
 var pong = {
 	init: function() {
-    pong.channel = "#pongbot-test";
+    pong.channel = "#pongbot";
 	},
   registerPlayer: function(user_name, cb) {
     var p = new Player({
