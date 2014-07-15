@@ -31,18 +31,13 @@ pongbot accept
 
 4) Game on!
 
-5) Record the match. Only one person from the match needs to record the match, it'll automatically change everyone's scores/rankings.
+5) Record the match. Only the person/team that lost can record, it'll automatically change everyone's scores/rankings.
 
-If you've won.
 
-```
-pongbot won
-```
-
-If you've lost.
 ```
 pongbot lost
 ```
+
 
 
 #Other commands

@@ -597,18 +597,6 @@ app.post('/', function(req, res){
             res.json({text: message});
           });
     	    break;
-    	case "won":
-          pong.findPlayer(hook.user_name, function(user) {
-            if (user) {
-              pong.win(hook.user_name, function(m) {
-                res.json({text: m});
-              });
-            } else if (user === false) {
-              message = "You're not registered! Use the command 'pongbot register' to get into the system.";
-              res.json({text: message});
-            }
-          });
-    	    break;
     	case "lost":
           pong.findPlayer(hook.user_name, function(user) {
             if (user) {
