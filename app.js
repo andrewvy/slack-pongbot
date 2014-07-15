@@ -609,8 +609,8 @@ app.post('/', function(req, res){
             }
           });
     	    break;
-    	case "match":
-    	    res.json({text: "Command: match"});
+    	case "won":
+    	    res.json({text: "Only the player/team that lost can record the game."});
     	    break;
       case "rank":
           var message = "";
