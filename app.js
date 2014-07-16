@@ -21,7 +21,7 @@ var Slack = require('node-slack')
 ,   express = require('express')
 ,   bodyParser = require('body-parser')
 ,   mongoose = require('mongoose')
-,   httpreq = require('httpreq')
+,   request = require('request')
 ,   Schema = mongoose.Schema;
 
 var app = express();
@@ -631,12 +631,8 @@ app.post('/', function(req, res){
               if (err) return handleError(err);
               for (var i=0;i<players.length;i++) {
                 if (i===5) {
-                  httpreq.post('https://opal.slack.com/services/hooks/incoming-webhook?token=7wigdXSmtHRDccxb5rpzzPeh', {
-                    parameters: {
-                      payload: {
-                        text: message
-                      }
-                    }
+                  request.post('https://opal.slack.com/services/hooks/incoming-webhook?token=7wigdXSmtHRDccxb5rpzzPeh', {
+                    payload: {text: message}
                   });
                   break;
                 }
