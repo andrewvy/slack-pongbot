@@ -625,7 +625,7 @@ app.post('/', function(req, res){
           });
           break;
       case "leaderboard"
-          var message = "Test \n Test \n Test";
+          var message = "Test";
           res.json({text: message});
           break;
       case "reset":
