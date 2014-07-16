@@ -28,7 +28,7 @@ var app = express();
 var slack = new Slack("opal", "7wigdXSmtHRDccxb5rpzzPeh");
 mongoose.connect('mongodb://localhost/pingpong');
 
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 var PlayerSchema = new Schema({
@@ -627,19 +627,7 @@ app.post('/', function(req, res){
           break;
       case "leaderboard":
           var message = "";
-          Player.find({}).sort({'elo': 'descending'}).find( function(err, players) {
-              if (err) return handleError(err);
-              for (var i=0;i<players.length;i++) {
-                if (i===5) {
-                  request.post('https://opal.slack.com/services/hooks/incoming-webhook?token=7wigdXSmtHRDccxb5rpzzPeh', {
-                    payload: {text: message}
-                  });
-                  break;
-                }
-                var actual = i++;
-                message = message + actual + ") " + players[i].user_name + ": Wins: " + players[i].wins + " Losses: " + players[i].losses + " Elo: " + players[i].elo + "\n";
-              }
-          });
+          res.json({text: "https://files.slack.com/files-pri/T0250FYAY-F02DPP8FG/image003.gif"})
           break;
       case "reset":
           var message = "";
