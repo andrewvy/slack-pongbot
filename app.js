@@ -633,8 +633,8 @@ app.post('/', function(req, res){
                     res.json({text: message});
                   break;
                 }
-                var actual = i + 1;
-                var message = message + actual + ") " + players[i].user_name + ": Wins: " + players[i].wins + " Losses: " + players[i].losses + " Elo: " + players[i].elo;
+                var actual = i++;
+                message = message + actual + ") " + players[i].user_name + ": Wins: " + players[i].wins + " Losses: " + players[i].losses + " Elo: " + players[i].elo + "\n";
               }
           });
           break;
