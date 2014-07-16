@@ -624,6 +624,9 @@ app.post('/', function(req, res){
             res.json({text: message});
           });
           break;
+      case "leaderboard"
+          var message = "Test \n Test \n Test";
+          res.json({text: message});
       case "reset":
           var message = "";
           if (hook.user_name === "vy") {
