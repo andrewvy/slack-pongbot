@@ -634,7 +634,7 @@ app.post('/', function(req, res){
                   break;
                 }
                 var actual = i + 1;
-                var message = message + actual + ") " + players[i].user_name + ": Wins: " + players[i].wins, " Losses: " + players[i].losses + " Elo: " + players[i].elo;
+                var message = message + actual + ") " + players[i].user_name + ": Wins: " + players[i].wins + " Losses: " + players[i].losses + " Elo: " + players[i].elo;
               }
           });
           break;
