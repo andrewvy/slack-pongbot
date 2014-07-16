@@ -624,9 +624,19 @@ app.post('/', function(req, res){
             res.json({text: message});
           });
           break;
-      case "leaderboard"
-          var message = "Test";
-          res.json({text: message});
+      case "leaderboard":
+          var message = ""
+          Player.find({}).sort({'elo': 'descending'}).find( function(err, players) {
+              if (err) return handleError(err);
+              for (var i=0;i<players.length;i++) {
+                if (i===5) {
+                    res.json({text: message});
+                  break;
+                }
+                var actual = i + 1;
+                var message = message + actual + ") " + players[i].user_name + ": Wins: " + players[i].wins, " Losses: " + players[i].losses + " Elo: " + players[i].elo;
+              }
+          });
           break;
       case "reset":
           var message = "";
