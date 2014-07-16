@@ -625,7 +625,7 @@ app.post('/', function(req, res){
           });
           break;
       case "leaderboard":
-          var message = ""
+          var message = "";
           Player.find({}).sort({'elo': 'descending'}).find( function(err, players) {
               if (err) return handleError(err);
               for (var i=0;i<players.length;i++) {
