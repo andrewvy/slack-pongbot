@@ -288,10 +288,10 @@ var pong = {
           if (err) return handleError(err);
             var e = 100 - Math.round(1 / (1 + Math.pow(10, ((loser.elo - winner.elo) / 400))) * 100);
             winner.tau = winner.tau || 0;
-            winner.tau++;
+            winner.tau = winner.tau + .5;
             winner.elo = winner.elo + Math.round((e * Math.pow(.97,winner.tau)));
             loser.tau = loser.tau || 0;
-            loser.tau++;
+            loser.tau = loser.tau + .5;
             loser.elo = loser.elo - Math.round((e * Math.pow(.97,loser.tau)));
             console.log("Elo: " + winner.elo);
             console.log("Elo: " + loser.elo);
@@ -325,16 +325,16 @@ var pong = {
                     var e3 = 100 - Math.round(1 / (1 + Math.pow(10, ((u3.elo - t1) / 400))) * 100);
                     var e4 = 100 - Math.round(1 / (1 + Math.pow(10, ((u4.elo - t1) / 400))) * 100);
                     u1.tau = u1.tau || 0;
-                    u1.tau++;
+                    u1.tau = u1.tau + .5;
                     u1.elo = u1.elo + Math.round((e * Math.pow(.75,u1.tau)));
                     u2.tau = u2.tau || 0;
-                    u2.tau++;
+                    u2.tau = u2.tau + .5;
                     u2.elo = u2.elo + Math.round((e2 * Math.pow(.75,u2.tau)));
                     u3.tau = u3.tau || 0;
-                    u3.tau++;
+                    u3.tau = u3.tau + .5;
                     u3.elo = u3.elo - Math.round((e3 * Math.pow(.75,u3.tau)));
                     u4.tau = u4.tau || 0;
-                    u4.tau++;
+                    u4.tau = u4.tau + .5;
                     u4.elo = u4.elo - Math.round((e4 * Math.pow(.75,u4.tau)));
                     console.log("Elo: " + u1.elo);
                     console.log("Elo: " + u2.elo);
@@ -540,6 +540,7 @@ var pong = {
         user.wins = 0;
         user.losses = 0;
         user.elo = 0;
+        user.tau = 1;
         user.save(function (err, user) {
           if (err) return handleError(err);
           cb();
