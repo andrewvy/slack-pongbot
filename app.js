@@ -36,6 +36,7 @@ var PlayerSchema = new Schema({
   wins: Number,
   losses: Number,
   elo: Number,
+  tau: Number,
   currentChallenge: { type: Schema.Types.ObjectId, ref: 'Challenge' }
 });
 
@@ -59,7 +60,8 @@ var pong = {
       user_name: user_name,
       wins: 0,
       losses: 0,
-      elo: 0
+      elo: 0,
+      tau: 0
     });
     p.save( function(err) {
       if (err) return new Error(err);
@@ -287,8 +289,12 @@ var pong = {
         qq.findOne(function (err, loser) {
           if (err) return handleError(err);
             var e = 100 - Math.round(1 / (1 + Math.pow(10, ((loser.elo - winner.elo) / 400))) * 100);
-            winner.elo = winner.elo + e;
-            loser.elo = loser.elo - e;
+            winner.tau = winner.tau || 0;
+            winner.tau++;
+            winner.elo = winner.elo + (e * Math.pow(.75,u1.tau));
+            loser.tau = loser.tau || 0;
+            loser.tau++;
+            loser.elo = loser.elo + (e2 * Math.pow(.75,u2.tau));
             winner.save(function(err) {
               if (err) return handleError(err);
             });
@@ -318,10 +324,18 @@ var pong = {
                     var e2 = 100 - Math.round(1 / (1 + Math.pow(10, ((t2 - u2.elo) / 400))) * 100);
                     var e3 = 100 - Math.round(1 / (1 + Math.pow(10, ((u3.elo - t1) / 400))) * 100);
                     var e4 = 100 - Math.round(1 / (1 + Math.pow(10, ((u4.elo - t1) / 400))) * 100);
-                    u1.elo = u1.elo + e;
-                    u2.elo = u2.elo + e2;
-                    u3.elo = u3.elo - e3;
-                    u4.elo = u4.elo - e4;
+                    u1.tau = u1.tau || 0;
+                    u1.tau++;
+                    u1.elo = u1.elo + (e * Math.pow(.75,u1.tau));
+                    u2.tau = u2.tau || 0;
+                    u2.tau++;
+                    u2.elo = u2.elo + (e2 * Math.pow(.75,u2.tau));
+                    u3.tau = u3.tau || 0;
+                    u3.tau++;
+                    u3.elo = u3.elo - (e3 * Math.pow(.75,u3.tau));
+                    u4.tau = u4.tau || 0;
+                    u4.tau++;
+                    u4.elo = u4.elo - (e4 * Math.pow(.75,u4.tau));
                     u1.save(function(err) {
                       if (err) return handleError(err);
                     });
