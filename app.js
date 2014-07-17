@@ -289,10 +289,12 @@ var pong = {
             var e = 100 - Math.round(1 / (1 + Math.pow(10, ((loser.elo - winner.elo) / 400))) * 100);
             winner.tau = winner.tau || 0;
             winner.tau++;
-            winner.elo = winner.elo + (e * Math.pow(.75,u1.tau));
+            winner.elo = winner.elo + (e * Math.pow(.97,winner.tau));
             loser.tau = loser.tau || 0;
             loser.tau++;
-            loser.elo = loser.elo + (e2 * Math.pow(.75,u2.tau));
+            loser.elo = loser.elo - (e * Math.pow(.97,loser.tau));
+            console.log("Elo: " + u1.elo);
+            console.log("Elo: " + u2.elo);
             winner.save(function(err) {
               if (err) return handleError(err);
             });
@@ -334,6 +336,10 @@ var pong = {
                     u4.tau = u4.tau || 0;
                     u4.tau++;
                     u4.elo = u4.elo - (e4 * Math.pow(.75,u4.tau));
+                    console.log("Elo: " + u1.elo);
+                    console.log("Elo: " + u2.elo);
+                    console.log("Elo: " + u3.elo);
+                    console.log("Elo: " + u4.elo);
                     u1.save(function(err) {
                       if (err) return handleError(err);
                     });
