@@ -675,12 +675,12 @@ app.post('/', function(req, res){
 
 app.post('/commands', function(req, res){
   console.log("Got a post from " + req.body.user_name);
-  var params = hook.text.split(" ");
-      var command = params[0];
-      switch(command) {
+  var params = req.body.command.text.split(" ");
+      var commands = params[0];
+      switch(commands) {
         case "/rank":
           var message = "";
-          var usertosearch = params[1] || hook.user_name;
+          var usertosearch = params[1] || req.body.user_name;
           pong.findPlayer(usertosearch, function(user){
             if (user) {
               message = user.user_name + ": " + user.wins + " wins, " + user.losses + " losses. Elo: " + user.elo;
