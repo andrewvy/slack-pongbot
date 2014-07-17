@@ -717,8 +717,19 @@ app.post('/commands', function(req, res){
             res.send(message);
           });
         break;
-        case "/test":
-          res.send("Test \n test \n test \n test");
+        case "/leaderboard":
+          var message = "";
+          Player.find({}).sort({'elo': 'descending'}).find( function(err, players) {
+            if (err) return handleError(err);
+            for (var i=0;i<players.length;i++) {
+              var actual = i + 1;
+              if (i == 6) {
+                res.send(message);
+                break;
+              }
+              message = message + actual + ") " + players[i].user_name + ": " + players[i].wins + "-" + players[i].losses + " Elo: " + players[i].elo + "\n";
+            }
+          });
         break;
       }
 });
