@@ -675,7 +675,7 @@ app.post('/', function(req, res){
 
 app.post('/commands', function(req, res){
   console.log("Got a post from " + req.body.user_name);
-  var params = req.body.command.text.split(" ");
+  var params = req.body.command.split(" ");
       var commands = params[0];
       switch(commands) {
         case "/rank":
