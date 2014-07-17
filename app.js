@@ -661,10 +661,10 @@ app.post('/', function(req, res){
           }
           break;
       case "source":
-          res.json({text: "https://gist.github.com/andrewvy/7efb5655212593cde45e"});
+          res.json({text: "https://github.com/andrewvy/opal-pongbot"});
           break;
       case "help":
-          res.json({text: "https://gist.github.com/andrewvy/d844b1c1fdbb89a4e0e1"});
+          res.json({text: "https://github.com/andrewvy/opal-pongbot"});
           break;
     	default:
     	    res.json({text: "I couldn't understand that command. Use 'pongbot help' to get a list of available commands."});

@@ -42,6 +42,8 @@ pongbot lost
 
 #Other commands
 ```
+/rank <someone's name> - Gets that person's stats. If none given, it will return your own stats
+
 pongbot decline - Decline's any proposed match.
 pongbot rank <someone's name> - Gets that person's stats. If none given, it will return your own stats.
 pongbot source - Get's Pongbot's current source file.
