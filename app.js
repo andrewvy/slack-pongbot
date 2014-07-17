@@ -673,6 +673,26 @@ app.post('/', function(req, res){
     }
 });
 
+app.post('/commands', function(req, res){
+  console.log("Got a post from " + req.body.user_name);
+  var params = hook.text.split(" ");
+      var command = params[0];
+      switch(command) {
+        case "/rank":
+          var message = "";
+          var usertosearch = params[1] || hook.user_name;
+          pong.findPlayer(usertosearch, function(user){
+            if (user) {
+              message = user.user_name + ": " + user.wins + " wins, " + user.losses + " losses. Elo: " + user.elo;
+            } else if (user === false) {
+              message = "Could not find a player with that name."
+            }
+            res.send({text: message});
+          });
+        break;
+      }
+});
+
 app.get('/api/rankings', function(req, res) {
   Player.find({}).sort({'elo': 'descending'}).find( function(err, players) {
     if (err) return handleError(err);
