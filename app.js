@@ -717,6 +717,9 @@ app.post('/commands', function(req, res){
             res.send(message);
           });
         break;
+        case "/test":
+          res.send("Test \n test \n test \n test");
+        break;
       }
 });
 
