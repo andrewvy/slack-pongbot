@@ -17,15 +17,13 @@
 // - Rankings
 // - Matchmaking Service (Matches people up with similar skill levels.)
 
-var Slack = require('node-slack')
-,   express = require('express')
+var express = require('express')
 ,   bodyParser = require('body-parser')
 ,   mongoose = require('mongoose')
 ,   request = require('request')
 ,   Schema = mongoose.Schema;
 
 var app = express();
-var slack = new Slack("opal", "7wigdXSmtHRDccxb5rpzzPeh");
 mongoose.connect('mongodb://localhost/pingpong');
 
 app.use(bodyParser.urlencoded({extended: false}));
