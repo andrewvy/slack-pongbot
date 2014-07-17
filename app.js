@@ -687,7 +687,7 @@ app.post('/commands', function(req, res){
             } else if (user === false) {
               message = "Could not find a player with that name."
             }
-            res.send({text: message});
+            res.send(message);
           });
         break;
       }
