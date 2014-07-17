@@ -547,6 +547,21 @@ var pong = {
         });
       }
     });
+  },
+  getDuelGif: function(cb) {
+    var gifs = [
+      "http://i235.photobucket.com/albums/ee210/f4nt0mh43d/BadDuel.gif",
+      "http://31.media.tumblr.com/99b8b1af381990801020079ae223a526/tumblr_mrbe6wQqR91sdds6qo1_500.gif",
+      "http://stream1.gifsoup.com/view3/1147041/duel-dollars-ending-o.gif",
+      "https://i.chzbgr.com/maxW500/5233508864/hC54C768C/",
+      "http://global3.memecdn.com/it-amp-039-s-time-to-duel_o_1532701.jpg",
+      "http://iambrony.dget.cc/mlp/gif/172595__UNOPT__safe_animated_trixie_spoiler-s03e05_magic-duel.gif",
+      "https://i.chzbgr.com/maxW500/2148438784/h7857A12F/",
+      "https://i.chzbgr.com/maxW500/3841869568/h2814E598/",
+      "http://24.media.tumblr.com/4e71f3df088eefed3d08ce4ce34e8d62/tumblr_mhyjqdJZ1g1s3r24zo1_500.gif"
+    ]
+    var rand = gifs[Math.floor(Math.random() * gifs.length)];
+    cb(rand);
   }
 };
 
@@ -580,7 +595,10 @@ app.post('/', function(req, res){
                 pong.findDoublesPlayers(params[3], params[5], params[6], function(m) {
                   if (m === true) {
                     pong.createDoubleChallenge(hook.user_name, params[3], params[5], params[6], function(m) {
-                      res.json({text: m});
+                      pong.getDuelGif( function(gif) {
+                        var responder = m + " " + gif;
+                        res.json({text: responder});
+                      });
                     });
                   } else {
                     res.json({text: m});
@@ -590,7 +608,10 @@ app.post('/', function(req, res){
                 pong.findPlayer(params[3], function(user) {
                   if (user) {
                     pong.createSingleChallenge(hook.user_name, params[3], function(m) {
-                      res.json({text: m});
+                      pong.getDuelGif( function(gif) {
+                        var responder = m + " " + gif;
+                        res.json({text: responder});
+                      });
                     });
                   } else {
                     message = "Could not find a player with that name.";
