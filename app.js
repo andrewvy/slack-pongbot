@@ -293,8 +293,8 @@ var pong = {
             loser.tau = loser.tau || 0;
             loser.tau++;
             loser.elo = loser.elo - (e * Math.pow(.97,loser.tau));
-            console.log("Elo: " + u1.elo);
-            console.log("Elo: " + u2.elo);
+            console.log("Elo: " + winner.elo);
+            console.log("Elo: " + loser.elo);
             winner.save(function(err) {
               if (err) return handleError(err);
             });
