@@ -668,7 +668,7 @@ app.post('/', function(req, res){
           break;
       case "leaderboard":
           var message = "";
-          res.json({text: "https://files.slack.com/files-pri/T0250FYAY-F02DPP8FG/image003.gif"})
+          res.json({text: "Use /leaderboard to access the leaderboards."})
           break;
       case "reset":
           var message = "";
