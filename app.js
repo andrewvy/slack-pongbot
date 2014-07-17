@@ -292,7 +292,7 @@ var pong = {
             winner.elo = winner.elo + Math.round((e * Math.pow(.97,winner.tau)));
             loser.tau = loser.tau || 0;
             loser.tau++;
-            loser.elo = loser.elo - Math.round((e * Math.pow(.97,loser.tau));
+            loser.elo = loser.elo - Math.round((e * Math.pow(.97,loser.tau)));
             console.log("Elo: " + winner.elo);
             console.log("Elo: " + loser.elo);
             winner.save(function(err) {
