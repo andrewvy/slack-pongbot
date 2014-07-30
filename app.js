@@ -24,7 +24,11 @@ var express = require('express')
 ,   Schema = mongoose.Schema;
 
 var app = express();
-mongoose.connect('mongodb://localhost/pingpong');
+
+var mongoUri = process.env.MONGOLAB_URI ||
+  process.env.MONGOHQ_URL ||
+  'mongodb://localhost/pingpong';
+mongoose.connect(mongoUri);
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());

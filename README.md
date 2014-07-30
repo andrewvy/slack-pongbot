@@ -130,3 +130,7 @@ Returns the last 10 matches, ordered by date.
 ]
 
 ```
+
+#Slack integration
+
+After deploying (eg. with [heroku](https://devcenter.heroku.com/articles/getting-started-with-nodejs)), visit `https://yourteamname.slack.com/services/new` and choose "Outgoing WebHooks." Choose which channels you would like pongbot active in, a trigger word like `pongbot`, and the url that you deployed to.
