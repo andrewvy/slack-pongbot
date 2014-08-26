@@ -659,7 +659,7 @@ app.post('/', function(req, res){
           var usertosearch = params[2] || hook.user_name;
           pong.findPlayer(usertosearch, function(user){
             if (user) {
-              message = user.user_name + ": " + user.wins + " wins, " + user.losses + " losses. Elo: " + user.elo;
+              message = user.user_name + ": " + user.wins + " wins, " + user.losses + " losses. Elo: " + user.elo * 10;
             } else if (user === false) {
               message = "Could not find a player with that name."
             }
@@ -710,7 +710,7 @@ app.post('/commands', function(req, res){
           var usertosearch = req.body.text || req.body.user_name;
           pong.findPlayer(usertosearch, function(user){
             if (user) {
-              message = user.user_name + ": " + user.wins + " wins, " + user.losses + " losses. Elo: " + user.elo;
+              message = user.user_name + ": " + user.wins + " wins, " + user.losses + " losses. Elo: " + user.elo * 10;
             } else if (user === false) {
               message = "Could not find a player with that name."
             }
@@ -727,7 +727,7 @@ app.post('/commands', function(req, res){
                 res.send(message);
                 break;
               }
-              message = message + actual + ") " + players[i].user_name + ": " + players[i].wins + "-" + players[i].losses + " Elo: " + players[i].elo + "\n";
+              message = message + actual + ") " + players[i].user_name + ": " + players[i].wins + "-" + players[i].losses + " Elo: " + players[i].elo * 10 + "\n";
             }
           });
         break;
