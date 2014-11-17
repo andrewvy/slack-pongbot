@@ -720,17 +720,15 @@ app.post('/commands', function(req, res){
 				break;
 				case "/leaderboard":
 					var message = "";
-					Player.find({}).sort({'elo': 'descending'}).find( function(err, players) {
+					Player.find({ "wins": { $gt: 5}}).sort({'elo': 'descending'}).find( function(err, players) {
 						if (err) return handleError(err);
 						for (var i=0;i<players.length;i++) {
-							if(players[i].wins + players[i].losses > 5) {
 								var actual = i + 1;
 								if (i == 6) {
 									res.send(message);
 									break;
 								}
 								message = message + actual + ") " + players[i].user_name + ": " + players[i].wins + "-" + players[i].losses + " Elo: " + players[i].elo * 10 + "\n";
-							}
 						}
 					});
 				break;
