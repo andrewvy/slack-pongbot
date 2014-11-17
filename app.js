@@ -730,6 +730,22 @@ app.post('/commands', function(req, res){
 						res.send(message);
 					});
 				break;
+				case "/challenges":
+					var message ="";
+					Challenge.find({ "state": "Proposed"}).sort({'date': 'desc'}).find( function(err, challenges) {
+						if(err) return handleError(err);
+						for (var i=0;i<challenges.length;i++) {
+							var actual = i + 1;
+							if (challenges[i].type == "Singles") {
+								message = message + actual + ") " + challenges[i].challenger[0] + " challenged " + challenges[i].challenged[0] + " on " + challenges[i].created_at + "\n";
+							} else {
+								message = message + actual + ") " + challenges[i].challenger[0] + " and " + challenges[i].challenger[1] + " challenged " + challenges[i].challenged[0] + " and " + challenges[i].challanged[0] + " on " + challenges[i].created_at + "\n";
+							}
+						}
+						res.send(message);
+					});
+				break;
+
 			}
 });
 
