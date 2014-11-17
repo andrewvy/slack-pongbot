@@ -616,7 +616,7 @@ app.post('/', function(req, res){
                       });
                     });
                   } else {
-                    message = "Could not find a player with that name.";
+                    message = "Could not find a player with that name. Have they registered?";
                     res.json({text: message});
                   }
                 });
@@ -662,7 +662,7 @@ app.post('/', function(req, res){
             if (user) {
               message = user.user_name + ": " + user.wins + " wins, " + user.losses + " losses. Elo: " + user.elo * 10;
             } else if (user === false) {
-              message = "Could not find a player with that name."
+              message = "Could not find a player with that name. Have they registered?"
             }
             res.json({text: message});
           });
