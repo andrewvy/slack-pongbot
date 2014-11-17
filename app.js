@@ -606,7 +606,7 @@ app.post('/', function(req, res){
 										res.json({text: m});
 									}
 								});
-							} else if (params[2] == "single") {
+							} else if (params[2] == "single" || params[2] == "singles") {
 								pong.findPlayer(params[3], function(user) {
 									if (user) {
 										pong.createSingleChallenge(hook.user_name, params[3], function(m) {
@@ -621,7 +621,7 @@ app.post('/', function(req, res){
 									}
 								});
 							} else {
-								message = "Invalid params. 'pongbot challenge _<single|doubles> <opponent|teammate>_ against _<opponent> <opponent>_ '";
+								message = "Invalid params. 'pongbot challenge _<singles|doubles> <opponent|teammate>_ against _<opponent> <opponent>_ '";
 								res.json({text: message});
 							}
 						} else if (user === false) {
@@ -736,10 +736,10 @@ app.post('/commands', function(req, res){
 						if(err) return handleError(err);
 						for (var i=0;i<challenges.length;i++) {
 							var actual = i + 1;
-							if (challenges[i].type == "Singles") {
-								message = message + actual + ") " + challenges[i].challenger[0] + " challenged " + challenges[i].challenged[0] + " on " + challenges[i].created_at + "\n";
+							if (challenges[i].type == "Single") {
+								message = message + actual + ") " + challenges[i].challenger[0] + " challenged " + challenges[i].challenged[0] + " on " + challenges[i].date + "\n";
 							} else {
-								message = message + actual + ") " + challenges[i].challenger[0] + " and " + challenges[i].challenger[1] + " challenged " + challenges[i].challenged[0] + " and " + challenges[i].challenged[1] + " on " + challenges[i].created_at + "\n";
+								message = message + actual + ") " + challenges[i].challenger[0] + " and " + challenges[i].challenger[1] + " challenged " + challenges[i].challenged[0] + " and " + challenges[i].challenged[1] + " on " + challenges[i].date + "\n";
 							}
 						}
 						res.send(message);
