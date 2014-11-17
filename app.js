@@ -132,11 +132,11 @@ var pong = {
               cb(message);
             });
           } else {
-            cb("There's already an active challenge.");
+            cb("There's already an active challenge for " + challenged);
           }
         });
       } else {
-        cb("There's already an active challenge.");
+        cb("There's already an active challenge for " + challenger);
       }
     });
   },
@@ -168,19 +168,19 @@ var pong = {
                         cb(message);
                       });
                   } else {
-                    cb("There's already an active challenge.");
+                    cb("There's already an active challenge for " + c4);
                   }
                 });
               } else {
-                cb("There's already an active challenge.");
+                cb("There's already an active challenge for " + c3);
               }
             });
           } else {
-            cb("There's already an active challenge.");
+            cb("There's already an active challenge for " + c2);
           }
         });
       } else {
-        cb("There's already an active challenge.");
+        cb("There's already an active challenge for " + c1);
       }
     });
   },
@@ -227,7 +227,8 @@ var pong = {
         Challenge.findOne({ _id: y.currentChallenge }, function(err, c) {
           if (c.state === "Proposed") {
             c.state = "Accepted";
-            cb("Accepted the proposal.");
+            var message = user_name + " accepted " + c.challenger[0] + "'s challenge."
+            cb(message);
             c.save(function (err) {
               if (err) return handleError(err);
             });
