@@ -723,6 +723,7 @@ app.post('/commands', function(req, res){
 					Player.find({ "wins": { $gt: 5}}).sort({'elo': 'descending'}).find( function(err, players) {
 						if (err) return handleError(err);
 						for (var i=0;i<players.length;i++) {
+								console.log(message);
 								var actual = i + 1;
 								if (i == 6) {
 									res.send(message);
