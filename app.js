@@ -739,7 +739,7 @@ app.post('/commands', function(req, res){
 							if (challenges[i].type == "Singles") {
 								message = message + actual + ") " + challenges[i].challenger[0] + " challenged " + challenges[i].challenged[0] + " on " + challenges[i].created_at + "\n";
 							} else {
-								message = message + actual + ") " + challenges[i].challenger[0] + " and " + challenges[i].challenger[1] + " challenged " + challenges[i].challenged[0] + " and " + challenges[i].challanged[0] + " on " + challenges[i].created_at + "\n";
+								message = message + actual + ") " + challenges[i].challenger[0] + " and " + challenges[i].challenger[1] + " challenged " + challenges[i].challenged[0] + " and " + challenges[i].challenged[1] + " on " + challenges[i].created_at + "\n";
 							}
 						}
 						res.send(message);
