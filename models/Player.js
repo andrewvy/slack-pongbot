@@ -1,4 +1,6 @@
 var mongoose = require('../lib/db.js');
+var Schema = mongoose.Schema;
+
 var PlayerSchema = new Schema({
 	user_name: String,
 	wins: Number,

@@ -1,4 +1,6 @@
 var mongoose = require('../lib/db.js');
+var Schema = mongoose.Schema;
+
 var ChallengeSchema = new Schema({
 	state: String,
 	type: String,
