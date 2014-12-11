@@ -47,7 +47,7 @@ app.get('/api/rankings', function(req, res) {
 });
 
 app.get('/api/matches', function(req, res) {
-	Challenge.find({}).sort({'date': 'desc'}).limit(10).find( function(err, challenges) {
+	Challenge.find({}).sort({'date': 'desc'}).find( function(err, challenges) {
 		if (err) return handleError(err);
 		res.json(challenges);
 	});
