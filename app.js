@@ -23,6 +23,9 @@ var request = require('request');
 
 var app = express();
 
+var mongoUri = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/pingpong';
+mongoose.connect(mongoUri);
+
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
