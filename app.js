@@ -25,7 +25,15 @@ var app = express();
 
 var mongoUri = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/pingpong';
 
-mongoose.connect(mongoUri);
+function connectWithRetry () {
+  return mongoose.connect(mongoUri, function (err) {
+    if (err) {
+      console.error('Failed to connect to mongo on startup - retrying in 5 sec', err);
+      setTimeout(connectWithRetry, 5000);
+    }
+  });
+}
+connectWithRetry();
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
