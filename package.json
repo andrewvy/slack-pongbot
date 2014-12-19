@@ -1,14 +1,12 @@
 {
   "name": "pongbot",
   "version": "0.9.1",
-  "description": "Pongbot",
-  "main": "app.js",
+  "description": "Slack bot for ping pong tracking",
   "dependencies": {
-    "express": "^4.10.6",
-    "node-slack": "^0.0.5",
-    "body-parser": "",
-    "mongoose": "",
-    "request": ""
+    "express": "4.10.x",
+    "node-slack": "0.0.x",
+    "body-parser": "1.x",
+    "mongoose": "3.8.x"
   },
   "scripts": {
     "start": "node app.js"
