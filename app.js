@@ -23,17 +23,23 @@ var mongoose = require('mongoose');
 
 var app = express();
 
-var mongoUri = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/pingpong';
-
-function connectWithRetry () {
+// connect db
+function dbConnect () {
+  var mongoUri = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/pingpong';
   return mongoose.connect(mongoUri, function (err) {
     if (err) {
-      console.error('Failed to connect to mongo on startup - retrying in 5 sec', err);
-      setTimeout(connectWithRetry, 5000);
+      console.error(err);
     }
   });
 }
-connectWithRetry();
+dbConnect();
+mongoose.connection.once('open', function () {
+  console.log('MongoDB connected');
+});
+mongoose.connection.on('error', function (err) {
+  console.error(err);
+  setTimeout(dbConnect, 5000);
+});
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
