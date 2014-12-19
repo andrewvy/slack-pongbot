@@ -1,4 +1,4 @@
-var mongoose = require('../lib/db.js');
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var PlayerSchema = new Schema({
