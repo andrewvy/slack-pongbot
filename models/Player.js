@@ -1,3 +1,5 @@
+'use strict';
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
@@ -6,16 +8,19 @@ var PlayerSchema = new Schema({
     type: String,
     index: true
   },
-	wins: Number,
+	wins: {
+    type: Number,
+    index: true
+  },
 	losses: Number,
 	elo: {
     type: Number,
     index: true
   },
 	tau: Number,
-	currentChallenge: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'Challenge' 
+	currentChallenge: {
+    type: Schema.Types.ObjectId,
+    ref: 'Challenge'
   }
 });
 

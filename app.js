@@ -17,29 +17,13 @@
 // - Rankings
 // - Matchmaking Service (Matches people up with similar skill levels.)
 
+'use strict';
+
 var express = require('express');
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
+require('./lib/db.js');
 
 var app = express();
-
-// connect db
-function dbConnect () {
-  var mongoUri = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/pingpong';
-  return mongoose.connect(mongoUri, function (err) {
-    if (err) {
-      console.error(err);
-    }
-  });
-}
-dbConnect();
-mongoose.connection.once('open', function () {
-  console.log('MongoDB connected');
-});
-mongoose.connection.on('error', function (err) {
-  console.error(err);
-  setTimeout(dbConnect, 5000);
-});
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());

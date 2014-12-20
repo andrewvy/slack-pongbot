@@ -15,6 +15,9 @@
     "node": "0.10.x"
   },
   "author": "Andrew Vy",
+  "contributors": [
+    "Jacob Friis Saxberg <jacob@saxberg.dk> (jacob.saxberg.dk)"
+  ],
   "license": "ISC",
   "repository": {
     "type": "git",

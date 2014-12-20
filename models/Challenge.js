@@ -1,10 +1,18 @@
+'use strict';
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var ChallengeSchema = new Schema({
-	state: String,
+	state: {
+    type: String,
+    index: true
+  },
 	type: String,
-	date: Date,
+	date: {
+    type: Date,
+    index: true
+  },
 	challenger: Array,
 	challenged: Array
 });
