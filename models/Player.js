@@ -4,21 +4,21 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var PlayerSchema = new Schema({
-	user_name: {
+  user_name: {
     type: String,
     index: true
   },
-	wins: {
+  wins: {
     type: Number,
     index: true
   },
-	losses: Number,
-	elo: {
+  losses: Number,
+  elo: {
     type: Number,
     index: true
   },
-	tau: Number,
-	currentChallenge: {
+  tau: Number,
+  currentChallenge: {
     type: Schema.Types.ObjectId,
     ref: 'Challenge'
   }
