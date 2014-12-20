@@ -23,16 +23,16 @@ var express = require('express');
 var bodyParser = require('body-parser');
 require('./lib/db.js');
 
-var app = express();
-
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
-
 var pong = require('./lib/pong');
 var routes = require('./lib/routes');
 
 var Player = require('./models/Player');
 var Challenge = require('./models/Challenge');
+
+var app = express();
+
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 pong.init();
 
