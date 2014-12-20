@@ -36,6 +36,11 @@ var Challenge = require('./models/Challenge');
 
 pong.init();
 
+// give a response to trackers 
+app.get('/', function (req, res) {
+  res.send('pong');
+});
+
 app.post('/', routes.index);
 
 app.post('/commands', routes.commands);
