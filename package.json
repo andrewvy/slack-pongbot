@@ -1,19 +1,29 @@
 {
   "name": "pongbot",
-  "version": "0.9.0",
-  "description": "Pongbot for Opal.",
-  "main": "app.js",
+  "version": "0.9.1",
+  "description": "Slack bot for ping pong tracking",
   "dependencies": {
-    "express": "^4.4.5",
-    "node-slack": "^0.0.3",
-    "body-parser": "",
-    "mongoose": "",
-    "request": ""
+    "express": "4.10.x",
+    "node-slack": "0.0.x",
+    "body-parser": "1.x",
+    "mongoose": "3.8.x"
   },
-  "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js"
+  },
+  "engines": {
+    "node": "0.10.x"
   },
   "author": "Andrew Vy",
-  "license": "ISC"
+  "contributors": [
+    "Jacob Friis Saxberg <jacob@saxberg.dk> (jacob.saxberg.dk)"
+  ],
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andrewvy/opal-pongbot.git"
+  },
+  "bugs": { 
+    "url" : "https://github.com/andrewvy/opal-pongbot/issues"
+  }
 }

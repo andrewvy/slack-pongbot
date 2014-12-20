@@ -1,12 +1,20 @@
-var mongoose = require('../lib/db.js');
+'use strict';
+
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var ChallengeSchema = new Schema({
-	state: String,
-	type: String,
-	date: Date,
-	challenger: Array,
-	challenged: Array
+  state: {
+    type: String,
+    index: true
+  },
+  type: String,
+  date: {
+    type: Date,
+    index: true
+  },
+  challenger: Array,
+  challenged: Array
 });
 
 var Challenge = mongoose.model('Challenge', ChallengeSchema);
