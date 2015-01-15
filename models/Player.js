@@ -7,7 +7,7 @@ var PlayerSchema = new Schema({
 	losses: Number,
 	elo: Number,
 	tau: Number,
-	currentChallenge: { type: Schema.Types.ObjectId, ref: 'Challenge' }
+	currentChallenge: Schema.Types.ObjectId
 });
 
 var Player = mongoose.model('Player', PlayerSchema);
