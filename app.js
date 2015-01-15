@@ -30,7 +30,6 @@ mongoose.connect(mongoUri);
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-var db = require('./lib/db');
 var pong = require('./lib/pong');
 var routes = require('./lib/routes');
 
