@@ -1,4 +1,4 @@
-var mongoose = require('../lib/db.js');
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var PlayerSchema = new Schema({
@@ -7,7 +7,7 @@ var PlayerSchema = new Schema({
 	losses: Number,
 	elo: Number,
 	tau: Number,
-	currentChallenge: Schema.Types.ObjectId
+	currentChallenge: { type: Schema.Types.ObjectId, ref: 'Challenge' }
 });
 
 var Player = mongoose.model('Player', PlayerSchema);
