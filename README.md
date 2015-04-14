@@ -1,6 +1,17 @@
 ## Pongbot 0.9
 
-#Quickstart guide:
+#Installation
+
+After deploying with your preferred solution (eg. with [heroku](https://devcenter.heroku.com/articles/getting-started-with-nodejs)), visit `https://yourteamname.slack.com/services/new` and choose "Outgoing WebHooks." Choose which channels you would like pongbot active in, a trigger word with `pongbot`, and the url that you deployed to.
+
+To get slash commands working (`/leaderboard`, `/rank`), you'll need to do a couple extra things.
+
+Go back to `https://yourteamname.slack.com/services/new` and choose "Slash Commands".
+
+Add `/leaderboard`, with the `yourdeployurl.com/command` route. METHOD should be POST. Other fields are your personal preference.
+Repeat the same for `/rank`!
+
+#Using Pongbot:
 
 1) Make sure you're registered with pongbot.
 
@@ -50,8 +61,6 @@ pongbot source - Get's Pongbot's current source file.
 pongbot reset <name> - Admin-only command that reset's a person's stats.
 ```
 #API
-
-API Server: dev.andrewvy.com:3000
 
 ###Endpoints:
 
@@ -130,7 +139,3 @@ Returns the last 10 matches, ordered by date.
 ]
 
 ```
-
-#Slack integration
-
-After deploying (eg. with [heroku](https://devcenter.heroku.com/articles/getting-started-with-nodejs)), visit `https://yourteamname.slack.com/services/new` and choose "Outgoing WebHooks." Choose which channels you would like pongbot active in, a trigger word like `pongbot`, and the url that you deployed to.
