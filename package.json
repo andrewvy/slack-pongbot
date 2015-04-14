@@ -12,10 +12,11 @@
   },
   "devDependencies": {
     "mocha": "",
-    "chai": ""
+    "chai": "",
+    "sinon": ""
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha"
+    "test": "./node_modules/mocha/bin/mocha --timeout=10s"
   },
   "author": "Andrew Vy",
   "license": "ISC"

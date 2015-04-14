@@ -1,15 +1,17 @@
 var expect = require("chai").expect;
 var pong = require("../lib/pong.js");
-var Player = require('../models/Player');
-var mongoose = require('mongoose');
+var Player = require("../models/Player");
+var mongoose = require("mongoose");
+var sinon = require("sinon");
 
 describe("Pong", function() {
-  beforeEach(function(done) {
-    mongoose.connect('mongodb://localhost/pingpong_test', function(){
-      mongoose.connection.db.dropDatabase(done);
-    });
-
+  before(function(done) {
     pong.init();
+    mongoose.connect('mongodb://localhost/pingpong_test', done);
+  });
+
+  beforeEach(function(done) {
+    mongoose.connection.db.dropDatabase(done);
   });
 
   describe("#init()", function() {
@@ -64,5 +66,91 @@ describe("Pong", function() {
         });
       });
     });
+  });
+
+  describe("getEveryone", function() {
+    describe("with a player", function() {
+      beforeEach(function(done) {
+        sinon.spy(console, 'log');
+        pong.registerPlayer('ZhangJike', function() {
+          pong.getEveryone(done);
+        });
+      });
+      afterEach(function () {
+        console.log.restore();
+      });
+      it("logs user", function() {
+        expect(console.log.calledOnce).to.be.true;
+        expect(console.log.firstCall.args[0][0].user_name).to.eq('ZhangJike');
+      });
+    });
+  });
+
+  describe("updateWins", function() {
+
+  });
+
+  describe("updateLosses", function() {
+
+  });
+
+  describe("reateSingleChallenge", function() {
+
+  });
+
+  describe("createDoubleChallenge", function() {
+
+  });
+
+  describe("checkChallenge", function() {
+
+  });
+
+  describe("setChallenge", function() {
+
+  });
+
+  describe("removeChallenge", function() {
+
+  });
+
+  describe("acceptChallenge", function() {
+
+  });
+
+  describe("declineChallenge", function() {
+
+  });
+
+  describe("calculateTeamElo", function() {
+
+  });
+
+  describe("eloSinglesChange", function() {
+
+  });
+
+  describe("eloDoublesChange", function() {
+
+  });
+
+  describe("win", function() {
+
+  });
+
+  describe("lose", function() {
+
+  });
+
+  describe("findDoublesPlayers", function() {
+
+  });
+
+  describe("reset", function() {
+
+  });
+
+  describe("getDuelGif", function() {
+
   });
 });
