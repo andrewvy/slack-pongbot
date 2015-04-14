@@ -1,5 +1,7 @@
 ## Pongbot 0.9
 
+[![Build Status](https://travis-ci.org/andrewvy/slack-pongbot.svg)](https://travis-ci.org/andrewvy/slack-pongbot)
+
 #Installation
 
 After deploying with your preferred solution (eg. with [heroku](https://devcenter.heroku.com/articles/getting-started-with-nodejs)), visit `https://yourteamname.slack.com/services/new` and choose "Outgoing WebHooks." Choose which channels you would like pongbot active in, a trigger word with `pongbot`, and the url that you deployed to.
