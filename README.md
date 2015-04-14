@@ -1,4 +1,5 @@
-## Pongbot 0.9
+# Pongbot
+Slack Bot for Ping Pong tracking.
 
 [![Build Status](https://travis-ci.org/andrewvy/slack-pongbot.svg)](https://travis-ci.org/andrewvy/slack-pongbot)
 
@@ -48,9 +49,8 @@ pongbot lost
 
 #Other commands
 ```
-/rank <someone's name> - Gets that person's stats. If none given, it will return your own stats
-
 pongbot decline - Decline's any proposed match.
+pongbot leaderboard - Shows the top players, sorted by Elo.
 pongbot rank <someone's name> - Gets that person's stats. If none given, it will return your own stats.
 pongbot source - Get's Pongbot's current source file.
 pongbot reset <name> - Admin-only command that reset's a person's stats.
@@ -71,7 +71,7 @@ Example:
 
 [
   {
-    "user_name": "brandon",
+    "user_name": "foo",
     "wins": 0,
     "losses": 0,
     "elo": 1000,
@@ -79,7 +79,7 @@ Example:
     "__v": 0
   },
   {
-    "user_name": "mcpants",
+    "user_name": "bar",
     "wins": 1,
     "losses": 0,
     "elo": 1000,
@@ -87,7 +87,7 @@ Example:
     "__v": 0
   },
   {
-    "user_name": "boek",
+    "user_name": "baz",
     "wins": 0,
     "losses": 0,
     "elo": 1000,
