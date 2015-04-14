@@ -4,13 +4,6 @@
 
 After deploying with your preferred solution (eg. with [heroku](https://devcenter.heroku.com/articles/getting-started-with-nodejs)), visit `https://yourteamname.slack.com/services/new` and choose "Outgoing WebHooks." Choose which channels you would like pongbot active in, a trigger word with `pongbot`, and the url that you deployed to.
 
-To get slash commands working (`/leaderboard`, `/rank`), you'll need to do a couple extra things.
-
-Go back to `https://yourteamname.slack.com/services/new` and choose "Slash Commands".
-
-Add `/leaderboard`, with the `yourdeployurl.com/command` route. METHOD should be POST. Other fields are your personal preference.
-Repeat the same for `/rank`!
-
 #Using Pongbot:
 
 1) Make sure you're registered with pongbot.
