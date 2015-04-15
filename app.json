@@ -4,6 +4,6 @@
 	"respository": "https://github.com/andrewvy/slack-pongbot",
 	"keywords": ["node", "pingpong", "slack", "integration"],
 	"addons": [
-		"mongolab:shared-single-small"
+		"mongolab"
 	]
 }
