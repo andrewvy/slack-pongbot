@@ -1,0 +1,9 @@
+{
+	"name": "Pongbot for Slack",
+	"description": "A ping-pong Slack integration.",
+	"respository": "https://github.com/andrewvy/slack-pongbot",
+	"keywords": ["node", "pingpong", "slack", "integration"],
+	"addons": [
+		"mongolab:shared-single-small"
+	]
+}
