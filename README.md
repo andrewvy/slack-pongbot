@@ -1,7 +1,9 @@
 # Pongbot
 Slack Bot for Ping Pong tracking.
 
-[![Build Status](https://travis-ci.org/andrewvy/slack-pongbot.svg)](https://travis-ci.org/andrewvy/slack-pongbot) [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)(https://heroku.com/deploy)
+[![Build Status](https://travis-ci.org/andrewvy/slack-pongbot.svg)](https://travis-ci.org/andrewvy/slack-pongbot)
+
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
 #Installation
 
