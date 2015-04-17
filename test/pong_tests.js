@@ -90,6 +90,37 @@ describe('Pong', function () {
   });
 
   describe('updateWins', function () {
+    it('returns an error when a user cannot be found', function (done) {
+      pong.updateWins('ZhangJike', function (err) {
+        expect(err).not.to.be.null;
+        expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+        done();
+      });
+    });
+
+    describe('with a player', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function () {
+          pong.updateWins('ZhangJike', done);
+        });
+      });
+
+      it('increments the number of wins', function (done) {
+        pong.findPlayer('ZhangJike', function (user) {
+          expect(user.wins).to.eq(1);
+          done();
+        });
+      });
+
+      it('increments the number of wins twice', function (done) {
+        pong.updateWins('ZhangJike', function () {
+          pong.findPlayer('ZhangJike', function (user) {
+            expect(user.wins).to.eq(2);
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('updateLosses', function () {
