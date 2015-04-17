@@ -4,19 +4,6 @@
 // |__|  |___|_|_|_  |_____|___|_|
 //               |___|
 
-
-// Version 0.9
-//
-// Right now, this is just a single monolithic file that I would like to split up into their own modules. It should be easy to abstract all the DB stuff and Pongbot Lib stuff into their own modules.
-//
-// In the next few versions, I would like to:
-//
-// - Update/tweak the elo algorithm and allow for placement matches
-// - More helpful command syntax
-// - An API for you guys to play around with, socket.io for live updates
-// - Rankings
-// - Matchmaking Service (Matches people up with similar skill levels.)
-
 var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
