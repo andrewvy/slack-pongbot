@@ -4,8 +4,8 @@
   "description": "Pongbot for Opal.",
   "main": "app.js",
   "dependencies": {
-    "express": "^4.4.5",
-    "node-slack": "^0.0.3",
+    "express": "^4.10.6",
+    "node-slack": "^0.0.5",
     "body-parser": "",
     "mongoose": "",
     "request": ""
@@ -18,7 +18,8 @@
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha --timeout=10s",
-    "lint": "./node_modules/jshint/bin/jshint lib test -c .jshint"
+    "lint": "./node_modules/jshint/bin/jshint lib test -c .jshint",
+    "start": "node app.js"
   },
   "author": "Andrew Vy",
   "license": "ISC"
