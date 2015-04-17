@@ -11,7 +11,7 @@ describe('Pong', function () {
   });
 
   beforeEach(function (done) {
-    mongoose.connection.db.dropDatabase(done);
+    Player.remove(done);
   });
 
   describe('#init()', function () {
@@ -39,6 +39,14 @@ describe('Pong', function () {
         expect(user.losses).to.eq(0);
         expect(user.elo).to.eq(0);
         expect(user.tau).to.eq(0);
+        done();
+      });
+    });
+
+    it('does not create a duplicate player', function (done) {
+      pong.registerPlayer('ZhangJike', function (err, user) {
+        expect(err).to.not.be.undefined;
+        expect(err.code).to.eq(11000);
         done();
       });
     });
