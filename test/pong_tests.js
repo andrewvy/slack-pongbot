@@ -59,7 +59,8 @@ describe('Pong', function () {
       });
 
       it('finds a player', function (done) {
-        pong.findPlayer('ZhangJike', function (user) {
+        pong.findPlayer('ZhangJike', function (err, user) {
+          expect(err).to.be.null;
           expect(user).not.to.be.null;
           expect(user.user_name).to.eq('ZhangJike');
           done();
@@ -68,9 +69,11 @@ describe('Pong', function () {
     });
 
     describe('without a player', function () {
-      it('doesn\'t find player', function (done) {
-        pong.findPlayer('ZhangJike', function (user) {
-          expect(user).to.be.false;
+      it("doesn't find player", function (done) {
+        pong.findPlayer('ZhangJike', function (err, user) {
+          expect(err).to.not.be.null;
+          expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+          expect(user).to.be.undefined;
           done();
         });
       });
@@ -114,7 +117,8 @@ describe('Pong', function () {
       });
 
       it('increments the number of wins', function (done) {
-        pong.findPlayer('ZhangJike', function (user) {
+        pong.findPlayer('ZhangJike', function (err, user) {
+          expect(err).to.be.null;
           expect(user.wins).to.eq(1);
           done();
         });
@@ -122,7 +126,8 @@ describe('Pong', function () {
 
       it('increments the number of wins twice', function (done) {
         pong.updateWins('ZhangJike', function () {
-          pong.findPlayer('ZhangJike', function (user) {
+          pong.findPlayer('ZhangJike', function (err, user) {
+            expect(err).to.be.null;
             expect(user.wins).to.eq(2);
             done();
           });
