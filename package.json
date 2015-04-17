@@ -13,10 +13,12 @@
   "devDependencies": {
     "mocha": "",
     "chai": "",
-    "sinon": ""
+    "sinon": "",
+    "jshint": ""
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha --timeout=10s"
+    "test": "./node_modules/mocha/bin/mocha --timeout=10s",
+    "lint": "./node_modules/jshint/bin/jshint lib test -c .jshint"
   },
   "author": "Andrew Vy",
   "license": "ISC"
