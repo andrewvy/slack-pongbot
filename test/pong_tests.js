@@ -73,7 +73,7 @@ describe('Pong', function () {
         pong.findPlayer('ZhangJike', function (err, user) {
           expect(err).to.not.be.null;
           expect(err.message).to.eq("User 'ZhangJike' does not exist.");
-          expect(user).to.be.undefined;
+          expect(user).to.be.null;
           done();
         });
       });
@@ -81,21 +81,23 @@ describe('Pong', function () {
   });
 
   describe('getEveryone', function () {
-    describe('with a player', function () {
+    describe('with a player', function (done) {
       beforeEach(function (done) {
         sinon.spy(console, 'log');
-        pong.registerPlayer('ZhangJike', function () {
-          pong.getEveryone(done);
-        });
+        pong.registerPlayer('ZhangJike', done);
       });
 
       afterEach(function () {
         console.log.restore();
       });
 
-      it('logs user', function () {
-        expect(console.log.calledOnce).to.be.true;
-        expect(console.log.firstCall.args[0][0].user_name).to.eq('ZhangJike');
+      it('logs and returns users', function (done) {
+        pong.getEveryone(function (err, users) {
+          expect(users.length).to.eq(1);
+          expect(console.log.calledOnce).to.be.true;
+          expect(console.log.firstCall.args[0][0].user_name).to.eq('ZhangJike');
+          done();
+        });
       });
     });
   });
@@ -137,6 +139,39 @@ describe('Pong', function () {
   });
 
   describe('updateLosses', function () {
+    it('returns an error when a user cannot be found', function (done) {
+      pong.updateLosses('ZhangJike', function (err) {
+        expect(err).not.to.be.null;
+        expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+        done();
+      });
+    });
+
+    describe('with a player', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function () {
+          pong.updateLosses('ZhangJike', done);
+        });
+      });
+
+      it('increments the number of losses', function (done) {
+        pong.findPlayer('ZhangJike', function (err, user) {
+          expect(err).to.be.null;
+          expect(user.losses).to.eq(1);
+          done();
+        });
+      });
+
+      it('increments the number of losses twice', function (done) {
+        pong.updateLosses('ZhangJike', function () {
+          pong.findPlayer('ZhangJike', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.losses).to.eq(2);
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('reateSingleChallenge', function () {
