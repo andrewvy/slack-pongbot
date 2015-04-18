@@ -3,6 +3,7 @@ chai.use(require('chai-string'));
 var expect = chai.expect;
 var pong = require('../lib/pong.js');
 var Player = require('../models/Player');
+var Challenge = require('../models/Challenge');
 var mongoose = require('mongoose');
 var sinon = require('sinon');
 
@@ -176,16 +177,174 @@ describe('Pong', function () {
     });
   });
 
-  describe('reateSingleChallenge', function () {
+  describe('createSingleChallenge', function () {
+    it('returns an error when the challenger cannot be found', function (done) {
+      pong.createSingleChallenge('ZhangJike', 'DengYaping', function (err) {
+        expect(err).not.to.be.null;
+        expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+        done();
+      });
+    });
+
+    describe('with a challenger', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', done);
+      });
+
+      it('returns an error when the challenged cannot be found', function (done) {
+        pong.createSingleChallenge('ZhangJike', 'DengYaping', function (err) {
+          expect(err).not.to.be.null;
+          expect(err.message).to.eq("User 'DengYaping' does not exist.");
+          done();
+        });
+      });
+
+      describe('with a challenged', function () {
+        beforeEach(function (done) {
+          pong.registerPlayer('DengYaping', done);
+        });
+
+        it('creates a challenge', function (done) {
+          pong.createSingleChallenge('ZhangJike', 'DengYaping', function (err, challenge) {
+            expect(err).to.not.be.null;
+            expect(err.message).to.eq("You have challenged DengYaping to a ping pong match!");
+            expect(challenge).to.not.be.null;
+            pong.findPlayer('ZhangJike', function (err, challenger) {
+              expect(challenger.currentChallenge).to.not.be.undefined;
+              expect(challenge._id.equals(challenger.currentChallenge)).to.be.true;
+              pong.findPlayer('DengYaping', function (err, challenged) {
+                expect(challenged.currentChallenge).to.not.be.undefined;
+                expect(challenged.currentChallenge.equals(challenger.currentChallenge)).to.be.true;
+                done();
+              });
+            });
+          });
+        });
+
+        describe('with an existing challenge', function (done) {
+          beforeEach(function (done) {
+            pong.createSingleChallenge('ZhangJike', 'DengYaping', function() {
+              done();
+            });
+          });
+
+          it('fails to create a challenge', function (done) {
+            pong.createSingleChallenge('ZhangJike', 'DengYaping', function (err, challenge) {
+              expect(err).to.not.be.null;
+              expect(err.message).to.eq("There's already an active challenge for ZhangJike");
+              done();
+            });
+          });
+        });
+      });
+    });
   });
 
   describe('createDoubleChallenge', function () {
+    describe('with 4 players', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function () {
+          pong.registerPlayer('DengYaping', function () {
+            pong.registerPlayer('ChenQi', function () {
+              pong.registerPlayer('ViktorBarna', function () {
+                done();
+              });
+            });
+          });
+        });
+      });
+
+      it('creates a challenge', function (done) {
+        pong.createDoubleChallenge('ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna', function (err, challenge) {
+          expect(err).to.not.be.null;
+          expect(err.message).to.eq("You and DengYaping have challenged ChenQi and ViktorBarna to a ping pong match!");
+          expect(challenge).to.not.be.null;
+          pong.findPlayer('ZhangJike', function (err, c1) {
+            expect(c1.currentChallenge.equals(challenge._id)).to.be.true;
+            pong.findPlayer('DengYaping', function (err, c2) {
+              expect(c2.currentChallenge.equals(challenge._id)).to.be.true;
+              pong.findPlayer('ChenQi', function (err, c3) {
+                expect(c3.currentChallenge.equals(challenge._id)).to.be.true;
+                pong.findPlayer('ViktorBarna', function (err, c4) {
+                  expect(c4.currentChallenge.equals(challenge._id)).to.be.true;
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+    });
   });
 
   describe('checkChallenge', function () {
+    it('returns an error when a user cannot be found', function (done) {
+      pong.checkChallenge('ZhangJike', function (err) {
+        expect(err).not.to.be.null;
+        expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+        done();
+      });
+    });
+
+    describe('with a player', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function (err, user) {
+          var challenge = new Challenge({
+            state: 'Proposed',
+            type: 'Single',
+            date: Date.now(),
+            challenger: [],
+            challenged: []
+          });
+          challenge.save(function () {
+            user.currentChallenge = challenge.id;
+            user.save(done);
+          });
+        });
+      });
+
+      it('returns current challenge', function (done) {
+        pong.checkChallenge('ZhangJike', function (err, challenge) {
+          expect(err).to.be.null;
+          expect(challenge.type).to.eq('Single');
+          done();
+        });
+      });
+    });
   });
 
   describe('setChallenge', function () {
+    it('returns an error when a user cannot be found', function (done) {
+      pong.setChallenge('ZhangJike', null, function(err) {
+        expect(err).not.to.be.null;
+        expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+        done();
+      });
+    });
+
+    describe('with a player', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', done);
+      });
+
+      it('sets challenge', function(done) {
+        var challenge = new Challenge({
+          state: 'Proposed',
+          type: 'Single',
+          date: Date.now(),
+          challenger: [],
+          challenged: []
+        });
+        challenge.save(function (err, challenge) {
+          pong.setChallenge('ZhangJike', challenge._id, function(err) {
+            pong.findPlayer('ZhangJike', function (err, user) {
+              expect(user.currentChallenge.equals(challenge._id)).to.be.true;
+              done();
+            });
+          });
+        });
+      });
+    });
   });
 
   describe('removeChallenge', function () {
@@ -253,7 +412,7 @@ describe('Pong', function () {
   describe('getDuelGif', function () {
     it('returns a gif', function (done) {
       pong.getDuelGif(function (gif) {
-        expect(gif).to.startsWith('http://');
+        expect(gif).to.startsWith('http');
         done();
       });
     });
