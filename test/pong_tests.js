@@ -336,7 +336,7 @@ describe('Pong', function () {
           challenged: []
         });
         challenge.save(function (err, challenge) {
-          pong.setChallenge('ZhangJike', challenge._id, function(err) {
+          pong.setChallenge('ZhangJike', challenge._id, function () {
             pong.findPlayer('ZhangJike', function (err, user) {
               expect(user.currentChallenge.equals(challenge._id)).to.be.true;
               done();
@@ -348,6 +348,27 @@ describe('Pong', function () {
   });
 
   describe('removeChallenge', function () {
+    describe('with a challenge', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function () {
+          pong.registerPlayer('DengYaping', function () {
+            pong.createSingleChallenge('ZhangJike', 'DengYaping', function () {
+              done();
+            });
+          });
+        });
+      });
+
+      it('removes challenge', function (done) {
+        pong.removeChallenge('DengYaping', function () {
+          pong.findPlayer('DengYaping', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.currentChallenge).to.be.undefined;
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('acceptChallenge', function () {
