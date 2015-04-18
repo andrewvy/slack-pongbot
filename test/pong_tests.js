@@ -214,6 +214,38 @@ describe('Pong', function () {
   });
 
   describe('reset', function () {
+    it('returns an error when a user cannot be found', function (done) {
+      pong.reset('ZhangJike', function (err) {
+        expect(err).not.to.be.null;
+        expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+        done();
+      });
+    });
+
+    describe('with a player', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function (err, user) {
+          user.wins = 42;
+          user.losses = 24;
+          user.tau = 3;
+          user.elo = 158;
+          user.save(done);
+        });
+      });
+
+      it('resets user fields', function (done) {
+        pong.reset('ZhangJike', function () {
+          pong.findPlayer('ZhangJike', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.wins).to.eq(0);
+            expect(user.tau).to.eq(1);
+            expect(user.elo).to.eq(0);
+            expect(user.losses).to.eq(0);
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('getDuelGif', function () {
