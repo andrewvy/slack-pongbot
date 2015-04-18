@@ -1,4 +1,6 @@
-var expect = require('chai').expect;
+var chai = require('chai');
+chai.use(require('chai-string'));
+var expect = chai.expect;
 var pong = require('../lib/pong.js');
 var Player = require('../models/Player');
 var mongoose = require('mongoose');
@@ -249,5 +251,11 @@ describe('Pong', function () {
   });
 
   describe('getDuelGif', function () {
+    it('returns a gif', function (done) {
+      pong.getDuelGif(function (gif) {
+        expect(gif).to.startsWith('http://');
+        done();
+      });
+    });
   });
 });
