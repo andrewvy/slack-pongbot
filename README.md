@@ -17,7 +17,7 @@ heroku config:add ADMIN_SECRET=secret
 
 Visit `https://yourteamname.slack.com/services/new` and choose "Outgoing WebHooks." Choose which channels you would like pongbot active in, a trigger word with `pongbot`, and the url that you deployed to.
 
-# Using Pongbot:
+# Using Pongbot from Slack
 
 Make sure you're registered with pongbot.
 
