@@ -981,11 +981,47 @@ describe('Pong', function () {
     });
   });
 
-  describe('playerToS', function() {
+  describe("playerToS", function(){
+    var currentUser = null;
+    beforeEach(function(done){
+      pong.registerPlayer('ZhangJike', function (err, user) {
+        currentUser = user;
+        done();
+      });
+    });
 
+    it("prints a newly registered user", function () {
+      expect(pong.playerToS(currentUser)).to.eq("ZhangJike: 0 wins 0 losses (elo: 0)");
+    });
   });
 
-  describe('playersToS', function() {
+  describe("playersToS", function(){
+    var sortedPlayers = null;
+    beforeEach(function() {
+      var worst = new Player({ user_name: 'worst', wins: 0, losses: 2, elo: 0, tau: 0 });
+      var middle = new Player({ user_name: 'middle', wins: 1, losses: 1, elo: 10, tau: 0 });
+      var best = new Player({ user_name: 'best', wins: 2, losses: 0, elo: 20, tau: 0 });
+      sortedPlayers = [best, middle, worst];
+    });
 
+    it("prints a leaderboard correctly", function () {
+      expect(pong.playersToS(sortedPlayers)).to.eq(
+        "1. best: 2 wins 0 losses (elo: 20)\n" +
+        "2. middle: 1 win 1 loss (elo: 10)\n" +
+        "3. worst: 0 wins 2 losses (elo: 0)\n"
+      );
+    });
+
+    it("prints a leaderboard with ties correctly", function () {
+      sortedPlayers = sortedPlayers.concat(sortedPlayers[2]);
+      sortedPlayers = [sortedPlayers[0]].concat(sortedPlayers);
+      expect(pong.playersToS(sortedPlayers)).to.eq(
+        "1. best: 2 wins 0 losses (elo: 20)\n" +
+        "1. best: 2 wins 0 losses (elo: 20)\n" +
+        "3. middle: 1 win 1 loss (elo: 10)\n" +
+        "4. worst: 0 wins 2 losses (elo: 0)\n" +
+        "4. worst: 0 wins 2 losses (elo: 0)\n"
+      );
+    });
   });
 });
