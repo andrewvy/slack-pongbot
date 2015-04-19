@@ -297,7 +297,7 @@ describe('Pong', function () {
         pong.registerPlayer('ZhangJike', function (err, user) {
           var challenge = new Challenge({
             state: 'Proposed',
-            type: 'Single',
+            type: 'Singles',
             date: Date.now(),
             challenger: [],
             challenged: []
@@ -312,7 +312,7 @@ describe('Pong', function () {
       it('returns current challenge', function (done) {
         pong.findChallenge('ZhangJike', function (err, challenge) {
           expect(err).to.be.null;
-          expect(challenge.type).to.eq('Single');
+          expect(challenge.type).to.eq('Singles');
           done();
         });
       });
@@ -336,7 +336,7 @@ describe('Pong', function () {
       it('sets challenge', function(done) {
         var challenge = new Challenge({
           state: 'Proposed',
-          type: 'Single',
+          type: 'Singles',
           date: Date.now(),
           challenger: [],
           challenged: []
