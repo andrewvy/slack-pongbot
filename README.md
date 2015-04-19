@@ -56,7 +56,7 @@ Record the match. Only the person/team that lost can record, it'll automatically
 pongbot lost
 ```
 
-# Other commands
+# Other Commands
 
 * `pongbot decline` - Decline's any proposed match.
 * `pongbot leaderboard <1-infinity>` - Shows the top players, sorted by Elo.
