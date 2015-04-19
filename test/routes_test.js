@@ -216,7 +216,7 @@ describe('Routes', function () {
           .send({ text: 'pongbot lost', user_name: 'ZhangJike' })
           .expect(200)
           .end(function(err, res) {
-            expect(res.body.text).to.eq("Match has been recorded.");
+            expect(res.body.text).to.eq("Match has been recorded, WangHao has defeated ZhangJike.");
             done();
           });
       });

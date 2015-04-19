@@ -237,7 +237,7 @@ describe('Pong', function () {
           it('fails to create a challenge', function (done) {
             pong.createSingleChallenge('ZhangJike', 'DengYaping', function (err, challenge) {
               expect(err).to.not.be.null;
-              expect(err.message).to.eq("There's already an active challenge for ZhangJike");
+              expect(err.message).to.eq("There's already an active challenge between ZhangJike and DengYaping.");
               done();
             });
           });
@@ -543,7 +543,7 @@ describe('Pong', function () {
         it('player one wins', function (done) {
           pong.win('ZhangJike', function (err, challenge) {
             expect(err).not.to.be.null;
-            expect(err.message).to.eq("Match has been recorded.");
+            expect(err.message).to.eq("Match has been recorded, ZhangJike has defeated DengYaping.");
             pong.findPlayer('ZhangJike', function (err, user) {
               expect(err).to.be.null;
               expect(user.wins).to.eq(1);
@@ -565,7 +565,7 @@ describe('Pong', function () {
         it('player two wins', function (done) {
           pong.win('DengYaping', function (err, challenge) {
             expect(err).not.to.be.null;
-            expect(err.message).to.eq("Match has been recorded.");
+            expect(err.message).to.eq("Match has been recorded, DengYaping has defeated ZhangJike.");
             pong.findPlayer('DengYaping', function (err, user) {
               expect(err).to.be.null;
               expect(user.wins).to.eq(1);
@@ -587,7 +587,7 @@ describe('Pong', function () {
         it('player one loses', function (done) {
           pong.lose('ZhangJike', function (err, challenge) {
             expect(err).not.to.be.null;
-            expect(err.message).to.eq("Match has been recorded.");
+            expect(err.message).to.eq("Match has been recorded, DengYaping has defeated ZhangJike.");
             pong.findPlayer('ZhangJike', function (err, user) {
               expect(err).to.be.null;
               expect(user.wins).to.eq(0);
@@ -609,7 +609,7 @@ describe('Pong', function () {
         it('player two loses', function (done) {
           pong.lose('DengYaping', function (err, challenge) {
             expect(err).not.to.be.null;
-            expect(err.message).to.eq("Match has been recorded.");
+            expect(err.message).to.eq("Match has been recorded, ZhangJike has defeated DengYaping.");
             pong.findPlayer('DengYaping', function (err, user) {
               expect(err).to.be.null;
               expect(user.wins).to.eq(0);
@@ -650,7 +650,7 @@ describe('Pong', function () {
       it('player one wins', function (done) {
         pong.win('ZhangJike', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ZhangJike and DengYaping have defeated ChenQi and ViktorBarna.");
           pong.findPlayer('ZhangJike', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -686,7 +686,7 @@ describe('Pong', function () {
       it('player two wins', function (done) {
         pong.win('DengYaping', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ZhangJike and DengYaping have defeated ChenQi and ViktorBarna.");
           pong.findPlayer('ZhangJike', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -722,7 +722,7 @@ describe('Pong', function () {
       it('player three wins', function (done) {
         pong.win('ChenQi', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ChenQi and ViktorBarna have defeated ZhangJike and DengYaping.");
           pong.findPlayer('ChenQi', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -758,7 +758,7 @@ describe('Pong', function () {
       it('player four wins', function (done) {
         pong.win('ViktorBarna', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ChenQi and ViktorBarna have defeated ZhangJike and DengYaping.");
           pong.findPlayer('ChenQi', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -794,7 +794,7 @@ describe('Pong', function () {
       it('player one loses', function (done) {
         pong.lose('ZhangJike', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ChenQi and ViktorBarna have defeated ZhangJike and DengYaping.");
           pong.findPlayer('ChenQi', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -830,7 +830,7 @@ describe('Pong', function () {
       it('player two loses', function (done) {
         pong.lose('DengYaping', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ChenQi and ViktorBarna have defeated ZhangJike and DengYaping.");
           pong.findPlayer('ChenQi', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -866,7 +866,7 @@ describe('Pong', function () {
       it('player three loses', function (done) {
         pong.lose('ChenQi', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ZhangJike and DengYaping have defeated ChenQi and ViktorBarna.");
           pong.findPlayer('ZhangJike', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -902,7 +902,7 @@ describe('Pong', function () {
       it('player four loses', function (done) {
         pong.lose('ViktorBarna', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ZhangJike and DengYaping have defeated ChenQi and ViktorBarna.");
           pong.findPlayer('ZhangJike', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
