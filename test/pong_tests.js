@@ -1,6 +1,9 @@
-var expect = require('chai').expect;
+var chai = require('chai');
+chai.use(require('chai-string'));
+var expect = chai.expect;
 var pong = require('../lib/pong.js');
 var Player = require('../models/Player');
+var Challenge = require('../models/Challenge');
 var mongoose = require('mongoose');
 var sinon = require('sinon');
 
@@ -10,8 +13,14 @@ describe('Pong', function () {
     mongoose.connect('mongodb://localhost/pingpong_test', done);
   });
 
+  after(function (done) {
+    mongoose.disconnect(done);
+  });
+
   beforeEach(function (done) {
-    mongoose.connection.db.dropDatabase(done);
+    Player.remove(function () {
+      Challenge.remove(done);
+    });
   });
 
   describe('#init()', function () {
@@ -42,6 +51,14 @@ describe('Pong', function () {
         done();
       });
     });
+
+    it('does not create a duplicate player', function (done) {
+      pong.registerPlayer('ZhangJike', function (err, user) {
+        expect(err).to.not.be.undefined;
+        expect(err.code).to.eq(11000);
+        done();
+      });
+    });
   });
 
   describe('#findPlayer', function () {
@@ -51,7 +68,8 @@ describe('Pong', function () {
       });
 
       it('finds a player', function (done) {
-        pong.findPlayer('ZhangJike', function (user) {
+        pong.findPlayer('ZhangJike', function (err, user) {
+          expect(err).to.be.null;
           expect(user).not.to.be.null;
           expect(user.user_name).to.eq('ZhangJike');
           done();
@@ -60,9 +78,11 @@ describe('Pong', function () {
     });
 
     describe('without a player', function () {
-      it('doesn\'t find player', function (done) {
-        pong.findPlayer('ZhangJike', function (user) {
-          expect(user).to.be.false;
+      it("doesn't find player", function (done) {
+        pong.findPlayer('ZhangJike', function (err, user) {
+          expect(err).to.not.be.null;
+          expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+          expect(user).to.be.null;
           done();
         });
       });
@@ -70,73 +90,902 @@ describe('Pong', function () {
   });
 
   describe('getEveryone', function () {
-    describe('with a player', function () {
+    describe('with a player', function (done) {
       beforeEach(function (done) {
         sinon.spy(console, 'log');
-        pong.registerPlayer('ZhangJike', function () {
-          pong.getEveryone(done);
-        });
+        pong.registerPlayer('ZhangJike', done);
       });
 
       afterEach(function () {
         console.log.restore();
       });
 
-      it('logs user', function () {
-        expect(console.log.calledOnce).to.be.true;
-        expect(console.log.firstCall.args[0][0].user_name).to.eq('ZhangJike');
+      it('logs and returns users', function (done) {
+        pong.getEveryone(function (err, users) {
+          expect(users.length).to.eq(1);
+          expect(console.log.calledOnce).to.be.true;
+          expect(console.log.firstCall.args[0][0].user_name).to.eq('ZhangJike');
+          done();
+        });
       });
     });
   });
 
   describe('updateWins', function () {
+    it('returns an error when a user cannot be found', function (done) {
+      pong.updateWins('ZhangJike', function (err) {
+        expect(err).not.to.be.null;
+        expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+        done();
+      });
+    });
+
+    describe('with a player', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function () {
+          pong.updateWins('ZhangJike', done);
+        });
+      });
+
+      it('increments the number of wins', function (done) {
+        pong.findPlayer('ZhangJike', function (err, user) {
+          expect(err).to.be.null;
+          expect(user.wins).to.eq(1);
+          done();
+        });
+      });
+
+      it('increments the number of wins twice', function (done) {
+        pong.updateWins('ZhangJike', function () {
+          pong.findPlayer('ZhangJike', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.wins).to.eq(2);
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('updateLosses', function () {
+    it('returns an error when a user cannot be found', function (done) {
+      pong.updateLosses('ZhangJike', function (err) {
+        expect(err).not.to.be.null;
+        expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+        done();
+      });
+    });
+
+    describe('with a player', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function () {
+          pong.updateLosses('ZhangJike', done);
+        });
+      });
+
+      it('increments the number of losses', function (done) {
+        pong.findPlayer('ZhangJike', function (err, user) {
+          expect(err).to.be.null;
+          expect(user.losses).to.eq(1);
+          done();
+        });
+      });
+
+      it('increments the number of losses twice', function (done) {
+        pong.updateLosses('ZhangJike', function () {
+          pong.findPlayer('ZhangJike', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.losses).to.eq(2);
+            done();
+          });
+        });
+      });
+    });
   });
 
-  describe('reateSingleChallenge', function () {
+  describe('createSingleChallenge', function () {
+    it('returns an error when the challenger cannot be found', function (done) {
+      pong.createSingleChallenge('ZhangJike', 'DengYaping', function (err) {
+        expect(err).not.to.be.null;
+        expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+        done();
+      });
+    });
+
+    describe('with a challenger', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', done);
+      });
+
+      it('returns an error when the challenged cannot be found', function (done) {
+        pong.createSingleChallenge('ZhangJike', 'DengYaping', function (err) {
+          expect(err).not.to.be.null;
+          expect(err.message).to.eq("User 'DengYaping' does not exist.");
+          done();
+        });
+      });
+
+      describe('with a challenged', function () {
+        beforeEach(function (done) {
+          pong.registerPlayer('DengYaping', done);
+        });
+
+        it('creates a challenge', function (done) {
+          pong.createSingleChallenge('ZhangJike', 'DengYaping', function (err, challenge) {
+            expect(err).to.not.be.null;
+            expect(err.message).to.eq("You have challenged DengYaping to a ping pong match!");
+            expect(challenge).to.not.be.null;
+            pong.findPlayer('ZhangJike', function (err, challenger) {
+              expect(challenger.currentChallenge).to.not.be.undefined;
+              expect(challenge._id.equals(challenger.currentChallenge)).to.be.true;
+              pong.findPlayer('DengYaping', function (err, challenged) {
+                expect(challenged.currentChallenge).to.not.be.undefined;
+                expect(challenged.currentChallenge.equals(challenger.currentChallenge)).to.be.true;
+                done();
+              });
+            });
+          });
+        });
+
+        describe('with an existing challenge', function (done) {
+          beforeEach(function (done) {
+            pong.createSingleChallenge('ZhangJike', 'DengYaping', function() {
+              done();
+            });
+          });
+
+          it('fails to create a challenge', function (done) {
+            pong.createSingleChallenge('ZhangJike', 'DengYaping', function (err, challenge) {
+              expect(err).to.not.be.null;
+              expect(err.message).to.eq("There's already an active challenge for ZhangJike");
+              done();
+            });
+          });
+        });
+      });
+    });
   });
 
   describe('createDoubleChallenge', function () {
+    describe('with 4 players', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function () {
+          pong.registerPlayer('DengYaping', function () {
+            pong.registerPlayer('ChenQi', function () {
+              pong.registerPlayer('ViktorBarna', function () {
+                done();
+              });
+            });
+          });
+        });
+      });
+
+      it('creates a challenge', function (done) {
+        pong.createDoubleChallenge('ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna', function (err, challenge) {
+          expect(err).to.not.be.null;
+          expect(err.message).to.eq("You and DengYaping have challenged ChenQi and ViktorBarna to a ping pong match!");
+          expect(challenge).to.not.be.null;
+          pong.findPlayer('ZhangJike', function (err, c1) {
+            expect(c1.currentChallenge.equals(challenge._id)).to.be.true;
+            pong.findPlayer('DengYaping', function (err, c2) {
+              expect(c2.currentChallenge.equals(challenge._id)).to.be.true;
+              pong.findPlayer('ChenQi', function (err, c3) {
+                expect(c3.currentChallenge.equals(challenge._id)).to.be.true;
+                pong.findPlayer('ViktorBarna', function (err, c4) {
+                  expect(c4.currentChallenge.equals(challenge._id)).to.be.true;
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+    });
   });
 
-  describe('checkChallenge', function () {
+  describe('findChallenge', function () {
+    it('returns an error when a user cannot be found', function (done) {
+      pong.findChallenge('ZhangJike', function (err) {
+        expect(err).not.to.be.null;
+        expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+        done();
+      });
+    });
+
+    describe('with a player', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function (err, user) {
+          var challenge = new Challenge({
+            state: 'Proposed',
+            type: 'Single',
+            date: Date.now(),
+            challenger: [],
+            challenged: []
+          });
+          challenge.save(function () {
+            user.currentChallenge = challenge.id;
+            user.save(done);
+          });
+        });
+      });
+
+      it('returns current challenge', function (done) {
+        pong.findChallenge('ZhangJike', function (err, challenge) {
+          expect(err).to.be.null;
+          expect(challenge.type).to.eq('Single');
+          done();
+        });
+      });
+    });
   });
 
   describe('setChallenge', function () {
+    it('returns an error when a user cannot be found', function (done) {
+      pong.setChallenge('ZhangJike', null, function(err) {
+        expect(err).not.to.be.null;
+        expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+        done();
+      });
+    });
+
+    describe('with a player', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', done);
+      });
+
+      it('sets challenge', function(done) {
+        var challenge = new Challenge({
+          state: 'Proposed',
+          type: 'Single',
+          date: Date.now(),
+          challenger: [],
+          challenged: []
+        });
+        challenge.save(function (err, challenge) {
+          pong.setChallenge('ZhangJike', challenge._id, function () {
+            pong.findPlayer('ZhangJike', function (err, user) {
+              expect(user.currentChallenge.equals(challenge._id)).to.be.true;
+              done();
+            });
+          });
+        });
+      });
+    });
   });
 
   describe('removeChallenge', function () {
+    describe('with a challenge', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function () {
+          pong.registerPlayer('DengYaping', function () {
+            pong.createSingleChallenge('ZhangJike', 'DengYaping', function () {
+              done();
+            });
+          });
+        });
+      });
+
+      it('removes challenge', function (done) {
+        pong.removeChallenge('DengYaping', function () {
+          pong.findPlayer('DengYaping', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.currentChallenge).to.be.undefined;
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('acceptChallenge', function () {
+    describe('with a challenge', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function () {
+          pong.registerPlayer('DengYaping', function () {
+            pong.createSingleChallenge('ZhangJike', 'DengYaping', function () {
+              done();
+            });
+          });
+        });
+      });
+
+      it('accepts challenge', function (done) {
+        pong.acceptChallenge('DengYaping', function (err, challenge) {
+          expect(err.message).to.eq("DengYaping accepted ZhangJike's challenge.");
+          expect(challenge.state).to.eq('Accepted');
+          done();
+        });
+      });
+
+      it("can't accept a challenge twice", function (done) {
+        pong.acceptChallenge('DengYaping', function (err, challenge) {
+          pong.acceptChallenge('DengYaping', function (err, challenge) {
+            expect(err.message).to.eq("You have already accepted ZhangJike's challenge.");
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('declineChallenge', function () {
+    describe('with a challenge', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function () {
+          pong.registerPlayer('DengYaping', function () {
+            pong.createSingleChallenge('ZhangJike', 'DengYaping', function () {
+              done();
+            });
+          });
+        });
+      });
+
+      it('declines challenge', function (done) {
+        pong.declineChallenge('DengYaping', function (err, challenge) {
+          expect(err.message).to.eq("DengYaping declined ZhangJike's challenge.");
+          expect(challenge.state).to.eq('Declined');
+          pong.findPlayer('DengYaping', function (err, user) {
+            expect(user.currentChallenge).to.be.null;
+            done();
+          });
+        });
+      });
+
+      it("can't decline a challenge twice", function (done) {
+        pong.declineChallenge('DengYaping', function (err, challenge) {
+          pong.declineChallenge('DengYaping', function (err, challenge) {
+            expect(err.message).to.eq("No challenge to decline.");
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('calculateTeamElo', function () {
+    beforeEach('with two players', function (done) {
+      pong.registerPlayer('ZhangJike', function (err, user1) {
+        user1.elo = 4;
+        user1.save(function () {
+          pong.registerPlayer('DengYaping', function (err, user2) {
+            user2.elo = 2;
+            user2.save(function () {
+              done();
+            });
+          });
+        });
+      });
+    });
+
+    it('returns average of elo', function (done) {
+      pong.calculateTeamElo('ZhangJike', 'DengYaping', function(err, elo) {
+        expect(elo).to.eq(3);
+        done();
+      });
+    });
   });
 
   describe('eloSinglesChange', function () {
+    beforeEach(function (done) {
+      pong.registerPlayer('ZhangJike', function (err, user1) {
+        pong.registerPlayer('DengYaping', function (err, user2) {
+          done();
+        });
+      });
+    });
+
+    it('updates elo after a challenge', function (done) {
+      pong.eloSinglesChange('ZhangJike', 'DengYaping', function(err, winner, loser) {
+        expect(winner.elo).to.eq(48);
+        expect(winner.tau).to.eq(0.5);
+        expect(loser.elo).to.eq(-48);
+        expect(loser.tau).to.eq(0.5);
+        done();
+      });
+    });
   });
 
   describe('eloDoublesChange', function () {
+    beforeEach(function (done) {
+      pong.registerPlayer('ZhangJike', function () {
+        pong.registerPlayer('DengYaping', function () {
+          pong.registerPlayer('ChenQi', function () {
+            pong.registerPlayer('ViktorBarna', function () {
+              done();
+            });
+          });
+        });
+      });
+    });
+
+    it('updates elo after a challenge', function (done) {
+      pong.eloDoublesChange('ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna', function(err, u1, u2, u3, u4) {
+        expect(u1.elo).to.eq(48);
+        expect(u1.tau).to.eq(0.5);
+        expect(u2.elo).to.eq(48);
+        expect(u2.tau).to.eq(0.5);
+        expect(u3.elo).to.eq(-48);
+        expect(u3.tau).to.eq(0.5);
+        expect(u4.elo).to.eq(-48);
+        expect(u4.tau).to.eq(0.5);
+        done();
+      });
+    });
   });
 
-  describe('win', function () {
-  });
+  describe('win and lose', function () {
+    describe('with a single challenge', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function () {
+          pong.registerPlayer('DengYaping', function () {
+            pong.createSingleChallenge('ZhangJike', 'DengYaping', function () {
+              done();
+            });
+          });
+        });
+      });
 
-  describe('lose', function () {
-  });
+      it('challenge must be accepted', function (done) {
+        pong.win('ZhangJike', function (err) {
+          expect(err).not.to.be.null;
+          expect(err.message).to.eq("Challenge needs to be accepted before recording match.");
+          done();
+        });
+      });
 
-  describe('findDoublesPlayers', function () {
+      describe('challenge accepted', function () {
+        beforeEach(function (done) {
+          pong.acceptChallenge('DengYaping', function () {
+            done();
+          });
+        });
+
+        it('player one wins', function (done) {
+          pong.win('ZhangJike', function (err, challenge) {
+            expect(err).not.to.be.null;
+            expect(err.message).to.eq("Match has been recorded.");
+            pong.findPlayer('ZhangJike', function (err, user) {
+              expect(err).to.be.null;
+              expect(user.wins).to.eq(1);
+              expect(user.tau).to.eq(0.5);
+              expect(user.elo).to.eq(48);
+              expect(user.losses).to.eq(0);
+              pong.findPlayer('DengYaping', function (err, user) {
+                expect(err).to.be.null;
+                expect(user.wins).to.eq(0);
+                expect(user.tau).to.eq(0.5);
+                expect(user.elo).to.eq(-48);
+                expect(user.losses).to.eq(1);
+                done();
+              });
+            });
+          });
+        });
+
+        it('player two wins', function (done) {
+          pong.win('DengYaping', function (err, challenge) {
+            expect(err).not.to.be.null;
+            expect(err.message).to.eq("Match has been recorded.");
+            pong.findPlayer('DengYaping', function (err, user) {
+              expect(err).to.be.null;
+              expect(user.wins).to.eq(1);
+              expect(user.tau).to.eq(0.5);
+              expect(user.elo).to.eq(48);
+              expect(user.losses).to.eq(0);
+              pong.findPlayer('ZhangJike', function (err, user) {
+                expect(err).to.be.null;
+                expect(user.wins).to.eq(0);
+                expect(user.tau).to.eq(0.5);
+                expect(user.elo).to.eq(-48);
+                expect(user.losses).to.eq(1);
+                done();
+              });
+            });
+          });
+        });
+
+        it('player one loses', function (done) {
+          pong.lose('ZhangJike', function (err, challenge) {
+            expect(err).not.to.be.null;
+            expect(err.message).to.eq("Match has been recorded.");
+            pong.findPlayer('ZhangJike', function (err, user) {
+              expect(err).to.be.null;
+              expect(user.wins).to.eq(0);
+              expect(user.tau).to.eq(0.5);
+              expect(user.elo).to.eq(-48);
+              expect(user.losses).to.eq(1);
+              pong.findPlayer('DengYaping', function (err, user) {
+                expect(err).to.be.null;
+                expect(user.wins).to.eq(1);
+                expect(user.tau).to.eq(0.5);
+                expect(user.elo).to.eq(48);
+                expect(user.losses).to.eq(0);
+                done();
+              });
+            });
+          });
+        });
+
+        it('player two loses', function (done) {
+          pong.lose('DengYaping', function (err, challenge) {
+            expect(err).not.to.be.null;
+            expect(err.message).to.eq("Match has been recorded.");
+            pong.findPlayer('DengYaping', function (err, user) {
+              expect(err).to.be.null;
+              expect(user.wins).to.eq(0);
+              expect(user.tau).to.eq(0.5);
+              expect(user.elo).to.eq(-48);
+              expect(user.losses).to.eq(1);
+              pong.findPlayer('ZhangJike', function (err, user) {
+                expect(err).to.be.null;
+                expect(user.wins).to.eq(1);
+                expect(user.tau).to.eq(0.5);
+                expect(user.elo).to.eq(48);
+                expect(user.losses).to.eq(0);
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+
+    describe('with an accepted doubles challenge', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function () {
+          pong.registerPlayer('DengYaping', function () {
+            pong.registerPlayer('ChenQi', function () {
+              pong.registerPlayer('ViktorBarna', function () {
+                pong.createDoubleChallenge('ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna', function (err, challenge) {
+                  pong.acceptChallenge('DengYaping', function () {
+                    done();
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+
+      it('player one wins', function (done) {
+        pong.win('ZhangJike', function (err, challenge) {
+          expect(err).not.to.be.null;
+          expect(err.message).to.eq("Match has been recorded.");
+          pong.findPlayer('ZhangJike', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.wins).to.eq(1);
+            expect(user.tau).to.eq(0.5);
+            expect(user.elo).to.eq(48);
+            expect(user.losses).to.eq(0);
+            pong.findPlayer('DengYaping', function (err, user) {
+              expect(err).to.be.null;
+              expect(user.wins).to.eq(1);
+              expect(user.tau).to.eq(0.5);
+              expect(user.elo).to.eq(48);
+              expect(user.losses).to.eq(0);
+              pong.findPlayer('ChenQi', function (err, user) {
+                expect(err).to.be.null;
+                expect(user.wins).to.eq(0);
+                expect(user.tau).to.eq(0.5);
+                expect(user.elo).to.eq(-48);
+                expect(user.losses).to.eq(1);
+                pong.findPlayer('ViktorBarna', function (err, user) {
+                  expect(err).to.be.null;
+                  expect(user.wins).to.eq(0);
+                  expect(user.tau).to.eq(0.5);
+                  expect(user.elo).to.eq(-48);
+                  expect(user.losses).to.eq(1);
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+
+      it('player two wins', function (done) {
+        pong.win('DengYaping', function (err, challenge) {
+          expect(err).not.to.be.null;
+          expect(err.message).to.eq("Match has been recorded.");
+          pong.findPlayer('ZhangJike', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.wins).to.eq(1);
+            expect(user.tau).to.eq(0.5);
+            expect(user.elo).to.eq(48);
+            expect(user.losses).to.eq(0);
+            pong.findPlayer('DengYaping', function (err, user) {
+              expect(err).to.be.null;
+              expect(user.wins).to.eq(1);
+              expect(user.tau).to.eq(0.5);
+              expect(user.elo).to.eq(48);
+              expect(user.losses).to.eq(0);
+              pong.findPlayer('ChenQi', function (err, user) {
+                expect(err).to.be.null;
+                expect(user.wins).to.eq(0);
+                expect(user.tau).to.eq(0.5);
+                expect(user.elo).to.eq(-48);
+                expect(user.losses).to.eq(1);
+                pong.findPlayer('ViktorBarna', function (err, user) {
+                  expect(err).to.be.null;
+                  expect(user.wins).to.eq(0);
+                  expect(user.tau).to.eq(0.5);
+                  expect(user.elo).to.eq(-48);
+                  expect(user.losses).to.eq(1);
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+
+      it('player three wins', function (done) {
+        pong.win('ChenQi', function (err, challenge) {
+          expect(err).not.to.be.null;
+          expect(err.message).to.eq("Match has been recorded.");
+          pong.findPlayer('ChenQi', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.wins).to.eq(1);
+            expect(user.tau).to.eq(0.5);
+            expect(user.elo).to.eq(48);
+            expect(user.losses).to.eq(0);
+            pong.findPlayer('ViktorBarna', function (err, user) {
+              expect(err).to.be.null;
+              expect(user.wins).to.eq(1);
+              expect(user.tau).to.eq(0.5);
+              expect(user.elo).to.eq(48);
+              expect(user.losses).to.eq(0);
+              pong.findPlayer('DengYaping', function (err, user) {
+                expect(err).to.be.null;
+                expect(user.wins).to.eq(0);
+                expect(user.tau).to.eq(0.5);
+                expect(user.elo).to.eq(-48);
+                expect(user.losses).to.eq(1);
+                pong.findPlayer('ZhangJike', function (err, user) {
+                  expect(err).to.be.null;
+                  expect(user.wins).to.eq(0);
+                  expect(user.tau).to.eq(0.5);
+                  expect(user.elo).to.eq(-48);
+                  expect(user.losses).to.eq(1);
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+
+      it('player four wins', function (done) {
+        pong.win('ViktorBarna', function (err, challenge) {
+          expect(err).not.to.be.null;
+          expect(err.message).to.eq("Match has been recorded.");
+          pong.findPlayer('ChenQi', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.wins).to.eq(1);
+            expect(user.tau).to.eq(0.5);
+            expect(user.elo).to.eq(48);
+            expect(user.losses).to.eq(0);
+            pong.findPlayer('ViktorBarna', function (err, user) {
+              expect(err).to.be.null;
+              expect(user.wins).to.eq(1);
+              expect(user.tau).to.eq(0.5);
+              expect(user.elo).to.eq(48);
+              expect(user.losses).to.eq(0);
+              pong.findPlayer('DengYaping', function (err, user) {
+                expect(err).to.be.null;
+                expect(user.wins).to.eq(0);
+                expect(user.tau).to.eq(0.5);
+                expect(user.elo).to.eq(-48);
+                expect(user.losses).to.eq(1);
+                pong.findPlayer('ZhangJike', function (err, user) {
+                  expect(err).to.be.null;
+                  expect(user.wins).to.eq(0);
+                  expect(user.tau).to.eq(0.5);
+                  expect(user.elo).to.eq(-48);
+                  expect(user.losses).to.eq(1);
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+
+      it('player one loses', function (done) {
+        pong.lose('ZhangJike', function (err, challenge) {
+          expect(err).not.to.be.null;
+          expect(err.message).to.eq("Match has been recorded.");
+          pong.findPlayer('ChenQi', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.wins).to.eq(1);
+            expect(user.tau).to.eq(0.5);
+            expect(user.elo).to.eq(48);
+            expect(user.losses).to.eq(0);
+            pong.findPlayer('ViktorBarna', function (err, user) {
+              expect(err).to.be.null;
+              expect(user.wins).to.eq(1);
+              expect(user.tau).to.eq(0.5);
+              expect(user.elo).to.eq(48);
+              expect(user.losses).to.eq(0);
+              pong.findPlayer('DengYaping', function (err, user) {
+                expect(err).to.be.null;
+                expect(user.wins).to.eq(0);
+                expect(user.tau).to.eq(0.5);
+                expect(user.elo).to.eq(-48);
+                expect(user.losses).to.eq(1);
+                pong.findPlayer('ZhangJike', function (err, user) {
+                  expect(err).to.be.null;
+                  expect(user.wins).to.eq(0);
+                  expect(user.tau).to.eq(0.5);
+                  expect(user.elo).to.eq(-48);
+                  expect(user.losses).to.eq(1);
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+
+      it('player two loses', function (done) {
+        pong.lose('DengYaping', function (err, challenge) {
+          expect(err).not.to.be.null;
+          expect(err.message).to.eq("Match has been recorded.");
+          pong.findPlayer('ChenQi', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.wins).to.eq(1);
+            expect(user.tau).to.eq(0.5);
+            expect(user.elo).to.eq(48);
+            expect(user.losses).to.eq(0);
+            pong.findPlayer('ViktorBarna', function (err, user) {
+              expect(err).to.be.null;
+              expect(user.wins).to.eq(1);
+              expect(user.tau).to.eq(0.5);
+              expect(user.elo).to.eq(48);
+              expect(user.losses).to.eq(0);
+              pong.findPlayer('DengYaping', function (err, user) {
+                expect(err).to.be.null;
+                expect(user.wins).to.eq(0);
+                expect(user.tau).to.eq(0.5);
+                expect(user.elo).to.eq(-48);
+                expect(user.losses).to.eq(1);
+                pong.findPlayer('ZhangJike', function (err, user) {
+                  expect(err).to.be.null;
+                  expect(user.wins).to.eq(0);
+                  expect(user.tau).to.eq(0.5);
+                  expect(user.elo).to.eq(-48);
+                  expect(user.losses).to.eq(1);
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+
+      it('player three loses', function (done) {
+        pong.lose('ChenQi', function (err, challenge) {
+          expect(err).not.to.be.null;
+          expect(err.message).to.eq("Match has been recorded.");
+          pong.findPlayer('ZhangJike', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.wins).to.eq(1);
+            expect(user.tau).to.eq(0.5);
+            expect(user.elo).to.eq(48);
+            expect(user.losses).to.eq(0);
+            pong.findPlayer('DengYaping', function (err, user) {
+              expect(err).to.be.null;
+              expect(user.wins).to.eq(1);
+              expect(user.tau).to.eq(0.5);
+              expect(user.elo).to.eq(48);
+              expect(user.losses).to.eq(0);
+              pong.findPlayer('ChenQi', function (err, user) {
+                expect(err).to.be.null;
+                expect(user.wins).to.eq(0);
+                expect(user.tau).to.eq(0.5);
+                expect(user.elo).to.eq(-48);
+                expect(user.losses).to.eq(1);
+                pong.findPlayer('ViktorBarna', function (err, user) {
+                  expect(err).to.be.null;
+                  expect(user.wins).to.eq(0);
+                  expect(user.tau).to.eq(0.5);
+                  expect(user.elo).to.eq(-48);
+                  expect(user.losses).to.eq(1);
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+
+      it('player four loses', function (done) {
+        pong.lose('ViktorBarna', function (err, challenge) {
+          expect(err).not.to.be.null;
+          expect(err.message).to.eq("Match has been recorded.");
+          pong.findPlayer('ZhangJike', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.wins).to.eq(1);
+            expect(user.tau).to.eq(0.5);
+            expect(user.elo).to.eq(48);
+            expect(user.losses).to.eq(0);
+            pong.findPlayer('DengYaping', function (err, user) {
+              expect(err).to.be.null;
+              expect(user.wins).to.eq(1);
+              expect(user.tau).to.eq(0.5);
+              expect(user.elo).to.eq(48);
+              expect(user.losses).to.eq(0);
+              pong.findPlayer('ChenQi', function (err, user) {
+                expect(err).to.be.null;
+                expect(user.wins).to.eq(0);
+                expect(user.tau).to.eq(0.5);
+                expect(user.elo).to.eq(-48);
+                expect(user.losses).to.eq(1);
+                pong.findPlayer('ViktorBarna', function (err, user) {
+                  expect(err).to.be.null;
+                  expect(user.wins).to.eq(0);
+                  expect(user.tau).to.eq(0.5);
+                  expect(user.elo).to.eq(-48);
+                  expect(user.losses).to.eq(1);
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+    });
   });
 
   describe('reset', function () {
+    it('returns an error when a user cannot be found', function (done) {
+      pong.reset('ZhangJike', function (err) {
+        expect(err).not.to.be.null;
+        expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+        done();
+      });
+    });
+
+    describe('with a player', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function (err, user) {
+          user.wins = 42;
+          user.losses = 24;
+          user.tau = 3;
+          user.elo = 158;
+          user.save(done);
+        });
+      });
+
+      it('resets user fields', function (done) {
+        pong.reset('ZhangJike', function () {
+          pong.findPlayer('ZhangJike', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.wins).to.eq(0);
+            expect(user.tau).to.eq(1);
+            expect(user.elo).to.eq(0);
+            expect(user.losses).to.eq(0);
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('getDuelGif', function () {
+    it('returns a gif', function (done) {
+      pong.getDuelGif(function (gif) {
+        expect(gif).to.startsWith('http');
+        done();
+      });
+    });
+  });
+
+  describe('playerToS', function() {
+
+  });
+
+  describe('playersToS', function() {
+
   });
 });
