@@ -13,8 +13,14 @@ describe('Pong', function () {
     mongoose.connect('mongodb://localhost/pingpong_test', done);
   });
 
+  after(function (done) {
+    mongoose.disconnect(done);
+  });
+
   beforeEach(function (done) {
-    Player.remove(done);
+    Player.remove(function () {
+      Challenge.remove(done);
+    });
   });
 
   describe('#init()', function () {
@@ -973,5 +979,13 @@ describe('Pong', function () {
         done();
       });
     });
+  });
+
+  describe('playerToS', function() {
+
+  });
+
+  describe('playersToS', function() {
+
   });
 });

@@ -8,14 +8,16 @@
     "node-slack": "^0.0.5",
     "body-parser": "",
     "mongoose": "",
-    "request": ""
+    "request": "",
+    "pluralize": ""
   },
   "devDependencies": {
     "mocha": "",
     "chai": "",
     "chai-string": "",
     "sinon": "",
-    "jshint": ""
+    "jshint": "",
+    "supertest": ""
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha --timeout=10s",
