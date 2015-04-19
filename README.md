@@ -58,14 +58,12 @@ pongbot lost
 
 # Other commands
 
-```
-pongbot decline - Decline's any proposed match.
-pongbot leaderboard <1-infinity> - Shows the top players, sorted by Elo.
-pongbot rank <someone's name> - Gets that person's stats. If none given, it will return your own stats.
-pongbot source - Get's Pongbot's current source file.
-pongbot reset <name> <secret> - Admin-only command that reset's a person's stats.
-pongbot new_season <secret> - Admin-only command that reset's all stats and begins a new season.
-```
+* `pongbot decline` - Decline's any proposed match.
+* `pongbot leaderboard <1-infinity>` - Shows the top players, sorted by Elo.
+* `pongbot rank <someone's name>` - Gets that person's stats. If none given, it will return your own stats.
+* `pongbot source` - Get's Pongbot's Github repository.
+* `pongbot reset <name> <secret>` - Admin-only command that reset's a person's stats.
+* `pongbot new_season <secret>` - Admin-only command that reset's all stats and begins a new season.
 
 # API
 
