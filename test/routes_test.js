@@ -280,29 +280,86 @@ describe('Routes', function () {
   describe('reset', function() {
     describe('with a pre-registered player', function () {
       beforeEach(function (done) {
+        process.env.ADMIN_SECRET = 'admin_secret';
         pong.registerPlayer('WangHao', function() {
           done();
         });
       });
 
-      it('without admin rights', function (done) {
+      afterEach(function () {
+        process.env.ADMIN_SECRET = null;
+      });
+
+      it('with the wrong admin secret', function (done) {
         request(app)
           .post('/')
-          .send({ text: 'pongbot reset WangHao', user_name: 'WangHao' })
+          .send({ text: 'pongbot reset WangHao invalid', user_name: 'WangHao' })
           .expect(200)
           .end(function(err, res) {
-            expect(res.body.text).to.eq("You do not have admin rights.");
+            expect(res.body.text).to.eq("Invalid secret. Use 'pongbot reset _<username>_ _<secret>_.");
             done();
           });
       });
 
-      it('with admin rights', function (done) {
+      it('with the correct admin secret', function (done) {
         request(app)
           .post('/')
-          .send({ text: 'pongbot reset WangHao', user_name: 'vy' })
+          .send({ text: 'pongbot reset WangHao admin_secret', user_name: 'vy' })
           .expect(200)
           .end(function(err, res) {
             expect(res.body.text).to.eq("WangHao's stats have been reset.");
+            done();
+          });
+      });
+    });
+  });
+
+  describe('new_season', function() {
+    beforeEach(function () {
+      process.env.ADMIN_SECRET = 'admin_secret';
+    });
+
+    afterEach(function () {
+      process.env.ADMIN_SECRET = null;
+    });
+
+    it('with the wrong admin secret', function (done) {
+      request(app)
+        .post('/')
+        .send({ text: 'pongbot new_season invalid', user_name: 'WangHao' })
+        .expect(200)
+        .end(function(err, res) {
+          expect(res.body.text).to.eq("Invalid secret. Use 'pongbot new_season _<secret>_.");
+          done();
+        });
+    });
+
+    describe('with two players', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function (err, user) {
+          user.wins = 42;
+          user.losses = 24;
+          user.tau = 3;
+          user.elo = 158;
+          user.save(function () {
+            pong.registerPlayer('ViktorBarna', function (err, user) {
+              user.wins = 4;
+              user.losses = 4;
+              user.tau = 3;
+              user.elo = 18;
+              done();
+            });
+          });
+        });
+      });
+
+      it('with the correct admin secret', function (done) {
+        request(app)
+          .post('/')
+          .send({ text: 'pongbot new_season admin_secret', user_name: 'WangHao' })
+          .expect(200)
+          .end(function(err, res) {
+            expect(res.body.text).to.eq("Welcome to the new season!");
             done();
           });
       });

@@ -972,6 +972,48 @@ describe('Pong', function () {
     });
   });
 
+  describe('resetAll', function () {
+    describe('with two players', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function (err, user) {
+          user.wins = 42;
+          user.losses = 24;
+          user.tau = 3;
+          user.elo = 158;
+          user.save(function () {
+            pong.registerPlayer('ViktorBarna', function (err, user) {
+              user.wins = 4;
+              user.losses = 4;
+              user.tau = 3;
+              user.elo = 18;
+              done();
+            });
+          });
+        });
+      });
+
+      it('resets all users', function (done) {
+        pong.resetAll(function () {
+          pong.findPlayer('ZhangJike', function (err, user) {
+            expect(err).to.be.null;
+            expect(user.wins).to.eq(0);
+            expect(user.tau).to.eq(1);
+            expect(user.elo).to.eq(0);
+            expect(user.losses).to.eq(0);
+            pong.findPlayer('ViktorBarna', function (err, user) {
+              expect(err).to.be.null;
+              expect(user.wins).to.eq(0);
+              expect(user.tau).to.eq(1);
+              expect(user.elo).to.eq(0);
+              expect(user.losses).to.eq(0);
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
+
   describe('getDuelGif', function () {
     it('returns a gif', function (done) {
       pong.getDuelGif(function (gif) {
