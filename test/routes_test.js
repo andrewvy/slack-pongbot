@@ -105,7 +105,7 @@ describe('Routes', function () {
           .send({ text: 'pongbot challenge singles ZhangJike', user_name: 'WangHao' })
           .expect(200)
           .end(function(err, res) {
-            expect(res.body.text).to.startsWith("You have challenged ZhangJike to a ping pong match!");
+            expect(res.body.text).to.startsWith("WangHao has challenged ZhangJike to a ping pong match!");
             done();
           });
       });
@@ -141,7 +141,7 @@ describe('Routes', function () {
           .send({ text: 'pongbot challenge doubles ChenQi against ZhangJike ViktorBarna', user_name: 'WangHao' })
           .expect(200)
           .end(function(err, res) {
-            expect(res.body.text).to.startsWith("You and ChenQi have challenged ZhangJike and ViktorBarna to a ping pong match!");
+            expect(res.body.text).to.startsWith("WangHao and ChenQi have challenged ZhangJike and ViktorBarna to a ping pong match!");
             done();
           });
       });
@@ -216,7 +216,7 @@ describe('Routes', function () {
           .send({ text: 'pongbot lost', user_name: 'ZhangJike' })
           .expect(200)
           .end(function(err, res) {
-            expect(res.body.text).to.eq("Match has been recorded.");
+            expect(res.body.text).to.eq("Match has been recorded, WangHao has defeated ZhangJike.");
             done();
           });
       });

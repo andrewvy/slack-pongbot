@@ -213,7 +213,7 @@ describe('Pong', function () {
         it('creates a challenge', function (done) {
           pong.createSingleChallenge('ZhangJike', 'DengYaping', function (err, challenge) {
             expect(err).to.not.be.null;
-            expect(err.message).to.eq("You have challenged DengYaping to a ping pong match!");
+            expect(err.message).to.eq("ZhangJike has challenged DengYaping to a ping pong match!");
             expect(challenge).to.not.be.null;
             pong.findPlayer('ZhangJike', function (err, challenger) {
               expect(challenger.currentChallenge).to.not.be.undefined;
@@ -237,7 +237,7 @@ describe('Pong', function () {
           it('fails to create a challenge', function (done) {
             pong.createSingleChallenge('ZhangJike', 'DengYaping', function (err, challenge) {
               expect(err).to.not.be.null;
-              expect(err.message).to.eq("There's already an active challenge for ZhangJike");
+              expect(err.message).to.eq("There's already an active challenge between ZhangJike and DengYaping.");
               done();
             });
           });
@@ -263,7 +263,7 @@ describe('Pong', function () {
       it('creates a challenge', function (done) {
         pong.createDoubleChallenge('ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna', function (err, challenge) {
           expect(err).to.not.be.null;
-          expect(err.message).to.eq("You and DengYaping have challenged ChenQi and ViktorBarna to a ping pong match!");
+          expect(err.message).to.eq("ZhangJike and DengYaping have challenged ChenQi and ViktorBarna to a ping pong match!");
           expect(challenge).to.not.be.null;
           pong.findPlayer('ZhangJike', function (err, c1) {
             expect(c1.currentChallenge.equals(challenge._id)).to.be.true;
@@ -297,7 +297,7 @@ describe('Pong', function () {
         pong.registerPlayer('ZhangJike', function (err, user) {
           var challenge = new Challenge({
             state: 'Proposed',
-            type: 'Single',
+            type: 'Singles',
             date: Date.now(),
             challenger: [],
             challenged: []
@@ -312,7 +312,7 @@ describe('Pong', function () {
       it('returns current challenge', function (done) {
         pong.findChallenge('ZhangJike', function (err, challenge) {
           expect(err).to.be.null;
-          expect(challenge.type).to.eq('Single');
+          expect(challenge.type).to.eq('Singles');
           done();
         });
       });
@@ -336,7 +336,7 @@ describe('Pong', function () {
       it('sets challenge', function(done) {
         var challenge = new Challenge({
           state: 'Proposed',
-          type: 'Single',
+          type: 'Singles',
           date: Date.now(),
           challenger: [],
           challenged: []
@@ -543,7 +543,7 @@ describe('Pong', function () {
         it('player one wins', function (done) {
           pong.win('ZhangJike', function (err, challenge) {
             expect(err).not.to.be.null;
-            expect(err.message).to.eq("Match has been recorded.");
+            expect(err.message).to.eq("Match has been recorded, ZhangJike has defeated DengYaping.");
             pong.findPlayer('ZhangJike', function (err, user) {
               expect(err).to.be.null;
               expect(user.wins).to.eq(1);
@@ -565,7 +565,7 @@ describe('Pong', function () {
         it('player two wins', function (done) {
           pong.win('DengYaping', function (err, challenge) {
             expect(err).not.to.be.null;
-            expect(err.message).to.eq("Match has been recorded.");
+            expect(err.message).to.eq("Match has been recorded, DengYaping has defeated ZhangJike.");
             pong.findPlayer('DengYaping', function (err, user) {
               expect(err).to.be.null;
               expect(user.wins).to.eq(1);
@@ -587,7 +587,7 @@ describe('Pong', function () {
         it('player one loses', function (done) {
           pong.lose('ZhangJike', function (err, challenge) {
             expect(err).not.to.be.null;
-            expect(err.message).to.eq("Match has been recorded.");
+            expect(err.message).to.eq("Match has been recorded, DengYaping has defeated ZhangJike.");
             pong.findPlayer('ZhangJike', function (err, user) {
               expect(err).to.be.null;
               expect(user.wins).to.eq(0);
@@ -609,7 +609,7 @@ describe('Pong', function () {
         it('player two loses', function (done) {
           pong.lose('DengYaping', function (err, challenge) {
             expect(err).not.to.be.null;
-            expect(err.message).to.eq("Match has been recorded.");
+            expect(err.message).to.eq("Match has been recorded, ZhangJike has defeated DengYaping.");
             pong.findPlayer('DengYaping', function (err, user) {
               expect(err).to.be.null;
               expect(user.wins).to.eq(0);
@@ -650,7 +650,7 @@ describe('Pong', function () {
       it('player one wins', function (done) {
         pong.win('ZhangJike', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ZhangJike and DengYaping have defeated ChenQi and ViktorBarna.");
           pong.findPlayer('ZhangJike', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -686,7 +686,7 @@ describe('Pong', function () {
       it('player two wins', function (done) {
         pong.win('DengYaping', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ZhangJike and DengYaping have defeated ChenQi and ViktorBarna.");
           pong.findPlayer('ZhangJike', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -722,7 +722,7 @@ describe('Pong', function () {
       it('player three wins', function (done) {
         pong.win('ChenQi', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ChenQi and ViktorBarna have defeated ZhangJike and DengYaping.");
           pong.findPlayer('ChenQi', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -758,7 +758,7 @@ describe('Pong', function () {
       it('player four wins', function (done) {
         pong.win('ViktorBarna', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ChenQi and ViktorBarna have defeated ZhangJike and DengYaping.");
           pong.findPlayer('ChenQi', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -794,7 +794,7 @@ describe('Pong', function () {
       it('player one loses', function (done) {
         pong.lose('ZhangJike', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ChenQi and ViktorBarna have defeated ZhangJike and DengYaping.");
           pong.findPlayer('ChenQi', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -830,7 +830,7 @@ describe('Pong', function () {
       it('player two loses', function (done) {
         pong.lose('DengYaping', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ChenQi and ViktorBarna have defeated ZhangJike and DengYaping.");
           pong.findPlayer('ChenQi', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -866,7 +866,7 @@ describe('Pong', function () {
       it('player three loses', function (done) {
         pong.lose('ChenQi', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ZhangJike and DengYaping have defeated ChenQi and ViktorBarna.");
           pong.findPlayer('ZhangJike', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -902,7 +902,7 @@ describe('Pong', function () {
       it('player four loses', function (done) {
         pong.lose('ViktorBarna', function (err, challenge) {
           expect(err).not.to.be.null;
-          expect(err.message).to.eq("Match has been recorded.");
+          expect(err.message).to.eq("Match has been recorded, ZhangJike and DengYaping have defeated ChenQi and ViktorBarna.");
           pong.findPlayer('ZhangJike', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(1);
@@ -981,11 +981,47 @@ describe('Pong', function () {
     });
   });
 
-  describe('playerToS', function() {
+  describe("playerToS", function(){
+    var currentUser = null;
+    beforeEach(function(done){
+      pong.registerPlayer('ZhangJike', function (err, user) {
+        currentUser = user;
+        done();
+      });
+    });
 
+    it("prints a newly registered user", function () {
+      expect(pong.playerToS(currentUser)).to.eq("ZhangJike: 0 wins 0 losses (elo: 0)");
+    });
   });
 
-  describe('playersToS', function() {
+  describe("playersToS", function(){
+    var sortedPlayers = null;
+    beforeEach(function() {
+      var worst = new Player({ user_name: 'worst', wins: 0, losses: 2, elo: 0, tau: 0 });
+      var middle = new Player({ user_name: 'middle', wins: 1, losses: 1, elo: 10, tau: 0 });
+      var best = new Player({ user_name: 'best', wins: 2, losses: 0, elo: 20, tau: 0 });
+      sortedPlayers = [best, middle, worst];
+    });
 
+    it("prints a leaderboard correctly", function () {
+      expect(pong.playersToS(sortedPlayers)).to.eq(
+        "1. best: 2 wins 0 losses (elo: 20)\n" +
+        "2. middle: 1 win 1 loss (elo: 10)\n" +
+        "3. worst: 0 wins 2 losses (elo: 0)\n"
+      );
+    });
+
+    it("prints a leaderboard with ties correctly", function () {
+      sortedPlayers = sortedPlayers.concat(sortedPlayers[2]);
+      sortedPlayers = [sortedPlayers[0]].concat(sortedPlayers);
+      expect(pong.playersToS(sortedPlayers)).to.eq(
+        "1. best: 2 wins 0 losses (elo: 20)\n" +
+        "1. best: 2 wins 0 losses (elo: 20)\n" +
+        "3. middle: 1 win 1 loss (elo: 10)\n" +
+        "4. worst: 0 wins 2 losses (elo: 0)\n" +
+        "4. worst: 0 wins 2 losses (elo: 0)\n"
+      );
+    });
   });
 });

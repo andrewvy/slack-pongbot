@@ -23,13 +23,13 @@ If singles:
 
 
 ```
-pongbot challenge single <opponent's name>
+pongbot challenge singles <opponent's name>
 ```
 
 If doubles:
 
 ```
-pongbot challenge double <teammate's name> against <opponent_1> <opponent_2>
+pongbot challenge doubles <teammate's name> against <opponent_1> <opponent_2>
 ```
 
 3) Let them run this, to accept the challenge. Only one other person (teammate or opponent) needs to accept to confirm the challenge.
