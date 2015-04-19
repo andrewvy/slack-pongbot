@@ -372,18 +372,139 @@ describe('Pong', function () {
   });
 
   describe('acceptChallenge', function () {
+    describe('with a challenge', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function () {
+          pong.registerPlayer('DengYaping', function () {
+            pong.createSingleChallenge('ZhangJike', 'DengYaping', function () {
+              done();
+            });
+          });
+        });
+      });
+
+      it('accepts challenge', function (done) {
+        pong.acceptChallenge('DengYaping', function (err, challenge) {
+          expect(err.message).to.eq("DengYaping accepted ZhangJike's challenge.");
+          expect(challenge.state).to.eq('Accepted');
+          done();
+        });
+      });
+
+      it("can't accept a challenge twice", function (done) {
+        pong.acceptChallenge('DengYaping', function (err, challenge) {
+          pong.acceptChallenge('DengYaping', function (err, challenge) {
+            expect(err.message).to.eq("You have already accepted ZhangJike's challenge.");
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('declineChallenge', function () {
+    describe('with a challenge', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function () {
+          pong.registerPlayer('DengYaping', function () {
+            pong.createSingleChallenge('ZhangJike', 'DengYaping', function () {
+              done();
+            });
+          });
+        });
+      });
+
+      it('declines challenge', function (done) {
+        pong.declineChallenge('DengYaping', function (err, challenge) {
+          expect(err.message).to.eq("DengYaping declined ZhangJike's challenge.");
+          expect(challenge.state).to.eq('Declined');
+          pong.findPlayer('DengYaping', function (err, user) {
+            expect(user.currentChallenge).to.be.null;
+            done();
+          });
+        });
+      });
+
+      it("can't decline a challenge twice", function (done) {
+        pong.declineChallenge('DengYaping', function (err, challenge) {
+          pong.declineChallenge('DengYaping', function (err, challenge) {
+            expect(err.message).to.eq("No challenge to decline.");
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('calculateTeamElo', function () {
+    beforeEach('with two players', function (done) {
+      pong.registerPlayer('ZhangJike', function (err, user1) {
+        user1.elo = 4;
+        user1.save(function () {
+          pong.registerPlayer('DengYaping', function (err, user2) {
+            user2.elo = 2;
+            user2.save(function () {
+              done();
+            });
+          });
+        });
+      });
+    });
+
+    it('returns average of elo', function (done) {
+      pong.calculateTeamElo('ZhangJike', 'DengYaping', function(err, elo) {
+        expect(elo).to.eq(3);
+        done();
+      });
+    });
   });
 
   describe('eloSinglesChange', function () {
+    beforeEach(function (done) {
+      pong.registerPlayer('ZhangJike', function (err, user1) {
+        pong.registerPlayer('DengYaping', function (err, user2) {
+          done();
+        });
+      });
+    });
+
+    it('updates elo after a challenge', function (done) {
+      pong.eloSinglesChange('ZhangJike', 'DengYaping', function(err, winner, loser) {
+        expect(winner.elo).to.eq(48);
+        expect(winner.tau).to.eq(0.5);
+        expect(loser.elo).to.eq(-48);
+        expect(loser.tau).to.eq(0.5);
+        done();
+      });
+    });
   });
 
   describe('eloDoublesChange', function () {
+    beforeEach(function (done) {
+      pong.registerPlayer('ZhangJike', function () {
+        pong.registerPlayer('DengYaping', function () {
+          pong.registerPlayer('ChenQi', function () {
+            pong.registerPlayer('ViktorBarna', function () {
+              done();
+            });
+          });
+        });
+      });
+    });
+
+    it('updates elo after a challenge', function (done) {
+      pong.eloDoublesChange('ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna', function(err, u1, u2, u3, u4) {
+        expect(u1.elo).to.eq(48);
+        expect(u1.tau).to.eq(0.5);
+        expect(u2.elo).to.eq(48);
+        expect(u2.tau).to.eq(0.5);
+        expect(u3.elo).to.eq(-48);
+        expect(u3.tau).to.eq(0.5);
+        expect(u4.elo).to.eq(-48);
+        expect(u4.tau).to.eq(0.5);
+        done();
+      });
+    });
   });
 
   describe('win', function () {
