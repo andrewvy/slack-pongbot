@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2015/04/19: [#32](https://github.com/andrewvy/slack-pongbot/issues/32) - You can no longer challenge yourself in a singles or someone else twice in a doubles game - [@dblock](https://github.com/dblock).
 * 2015/04/19: [#29](https://github.com/andrewvy/slack-pongbot/pull/29) - Added `pongbot new_season <secret>` to reset all user stats - [@dblock](https://github.com/dblock), [@ilyakava](https://github.com/ilyakava), [@jinpark](https://github.com/jinpark).
 * 2015/04/19: [#29](https://github.com/andrewvy/slack-pongbot/pull/29) - The `pongbot reset <username>` command now requires a secret - [@dblock](https://github.com/dblock), [@ilyakava](https://github.com/ilyakava).
 * 2015/04/19: [#29](https://github.com/andrewvy/slack-pongbot/pull/29) - Admin no-longer hard-coded, set `ADMIN_SECRET` for administrative commands - [@dblock](https://github.com/dblock), [@ilyakava](https://github.com/ilyakava), [@jinpark](https://github.com/jinpark).

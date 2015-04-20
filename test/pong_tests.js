@@ -195,6 +195,14 @@ describe('Pong', function () {
         pong.registerPlayer('ZhangJike', done);
       });
 
+      it('requires all players to be unique', function (done) {
+        pong.createSingleChallenge('ZhangJike', 'ZhangJike', function (err, challenge) {
+          expect(err).to.not.be.null;
+          expect(err.message).to.eq("Does ZhangJike have 4 hands?");
+          done();
+        });
+      });
+
       it('returns an error when the challenged cannot be found', function (done) {
         pong.createSingleChallenge('ZhangJike', 'DengYaping', function (err) {
           expect(err).not.to.be.null;
@@ -286,6 +294,14 @@ describe('Pong', function () {
             expect(err.message).to.eq("There's already an active challenge between ZhangJike and DengYaping.");
             done();
           });
+        });
+      });
+
+      it('requires all players to be unique', function (done) {
+        pong.createDoubleChallenge('ZhangJike', 'ZhangJike', 'ChenQi', 'ViktorBarna', function (err, challenge) {
+          expect(err).to.not.be.null;
+          expect(err.message).to.eq("Does ZhangJike have 4 hands?");
+          done();
         });
       });
     });
@@ -1045,7 +1061,7 @@ describe('Pong', function () {
     });
   });
 
-  describe("playersToS", function(){
+  describe("playersToS", function() {
     var sortedPlayers = null;
     beforeEach(function() {
       var worst = new Player({ user_name: 'worst', wins: 0, losses: 2, elo: 0, tau: 0 });
@@ -1072,6 +1088,23 @@ describe('Pong', function () {
         "4. worst: 0 wins 2 losses (elo: 0)\n" +
         "4. worst: 0 wins 2 losses (elo: 0)\n"
       );
+    });
+  });
+
+  describe('ensureUniquePlayers', function () {
+    it('fails with a duplicate', function (done) {
+      pong.ensureUniquePlayers([ 'ZhangJike', 'ZhangJike', 'ZhangJike', 'ChenQi' ], function (err, players) {
+        expect(err).to.not.be.null;
+        expect(err.message).to.eq('Does ZhangJike have 6 hands?');
+        done();
+      });
+    });
+
+    it('succeeds with a duplicate', function (done) {
+      pong.ensureUniquePlayers([ 'ZhangJike', 'ViktorBarna' ], function (err, players) {
+        expect(err).to.be.null;
+        done();
+      });
     });
   });
 });
