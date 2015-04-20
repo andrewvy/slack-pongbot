@@ -5,6 +5,8 @@ Slack Bot for Ping Pong tracking.
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
+![](images/duel.gif)
+
 # Installation
 
 Deploy with your preferred solution, eg. with [Heroku](https://devcenter.heroku.com/articles/getting-started-with-nodejs).
@@ -56,6 +58,7 @@ Record the match. Only the person/team that lost can record, it'll automatically
 pongbot lost
 ```
 
+
 # Other Commands
 
 * `pongbot decline` - Decline's any proposed match.
@@ -67,86 +70,11 @@ pongbot lost
 
 # API
 
-### Endpoints:
+See [API Documentation](API.md).
 
-## /api/rankings
+# License & Copyright
 
-```
-GET /api/rankings
-```
+Copyright (c) 2014-2015, Andrew Vy and Contributors
 
-Returns an array of all player objects, sorted by elo.
+ISC License, see [LICENSE](LICENSE) for details.
 
-```
-{ user_name: String, wins: Number, losses: Number, elo: Number, _id: ObjectId }
-```
-
-Example:
-
-```json
-[
-  {
-    "user_name": "foo",
-    "wins": 0,
-    "losses": 0,
-    "elo": 1000,
-    "_id": "53adf57837567d3535d5d5d7",
-    "__v": 0
-  },
-  {
-    "user_name": "bar",
-    "wins": 1,
-    "losses": 0,
-    "elo": 1000,
-    "_id": "53adf7074cf27d7135e4a999",
-    "__v": 0
-  },
-  {
-    "user_name": "baz",
-    "wins": 0,
-    "losses": 0,
-    "elo": 1000,
-    "_id": "53b1afef013005ad444723f6",
-    "__v": 0
-  }
-]
-```
-
-## /api/matches
-
-```
-GET /api/matches
-```
-
-Returns the last 10 matches, ordered by date.
-
-```json
-[
-  {
-    "state": "Accepted",
-    "type": "Single",
-    "date": "2014-06-30T19:51:05.995Z",
-    "_id": "53b1bfa98cbfa893455cf920",
-    "__v": 0,
-    "challenged": [
-      "testbot"
-    ],
-    "challenger": [
-      "vy"
-    ]
-  },
-  {
-    "state": "Accepted",
-    "type": "Single",
-    "date": "2014-06-30T20:02:18.015Z",
-    "_id": "53b1c24acb726ded45be4927",
-    "__v": 0,
-    "challenged": [
-      "test"
-    ],
-    "challenger": [
-      "vy"
-    ]
-  }
-]
-```
