@@ -33,8 +33,6 @@ app.get('/', function (req, res) {
 
 app.post('/', routes.index);
 
-app.post('/commands', routes.commands);
-
 app.get('/api/rankings', function(req, res) {
 	Player.find({}).sort({'elo': 'descending'}).find( function(err, players) {
 		if (err) return res.status(500).send(err);
