@@ -96,6 +96,39 @@ describe('Pong', function () {
     });
   });
 
+  describe('#findPlayers', function () {
+    describe('with two players', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function() {
+          pong.registerPlayer('DengYaping', function () {
+            done();
+          });
+        });
+      });
+
+      it('finds both players', function (done) {
+        pong.findPlayers(['ZhangJike', 'DengYaping'], function (err, players) {
+          expect(err).to.be.null;
+          expect(players.length).to.eq(2);
+          expect(players[0].user_name).to.eq('ZhangJike');
+          expect(players[1].user_name).to.eq('DengYaping');
+          done();
+        });
+      });
+    });
+
+    describe('without a player', function () {
+      it("doesn't find player", function (done) {
+        pong.findPlayer('ZhangJike', function (err, user) {
+          expect(err).to.not.be.null;
+          expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+          expect(user).to.be.null;
+          done();
+        });
+      });
+    });
+  });
+
   describe('getEveryone', function () {
     describe('with a player', function (done) {
       beforeEach(function (done) {
@@ -120,7 +153,7 @@ describe('Pong', function () {
 
   describe('updateWins', function () {
     it('returns an error when a user cannot be found', function (done) {
-      pong.updateWins('ZhangJike', function (err) {
+      pong.updateWins(['ZhangJike'], function (err) {
         expect(err).not.to.be.null;
         expect(err.message).to.eq("User 'ZhangJike' does not exist.");
         done();
@@ -130,7 +163,7 @@ describe('Pong', function () {
     describe('with a player', function () {
       beforeEach(function (done) {
         pong.registerPlayer('ZhangJike', function () {
-          pong.updateWins('ZhangJike', done);
+          pong.updateWins(['ZhangJike'], done);
         });
       });
 
@@ -143,7 +176,7 @@ describe('Pong', function () {
       });
 
       it('increments the number of wins twice', function (done) {
-        pong.updateWins('ZhangJike', function () {
+        pong.updateWins(['ZhangJike'], function () {
           pong.findPlayer('ZhangJike', function (err, user) {
             expect(err).to.be.null;
             expect(user.wins).to.eq(2);
@@ -156,7 +189,7 @@ describe('Pong', function () {
 
   describe('updateLosses', function () {
     it('returns an error when a user cannot be found', function (done) {
-      pong.updateLosses('ZhangJike', function (err) {
+      pong.updateLosses(['ZhangJike'], function (err) {
         expect(err).not.to.be.null;
         expect(err.message).to.eq("User 'ZhangJike' does not exist.");
         done();
@@ -166,7 +199,7 @@ describe('Pong', function () {
     describe('with a player', function () {
       beforeEach(function (done) {
         pong.registerPlayer('ZhangJike', function () {
-          pong.updateLosses('ZhangJike', done);
+          pong.updateLosses(['ZhangJike'], done);
         });
       });
 
@@ -179,7 +212,7 @@ describe('Pong', function () {
       });
 
       it('increments the number of losses twice', function (done) {
-        pong.updateLosses('ZhangJike', function () {
+        pong.updateLosses(['ZhangJike'], function () {
           pong.findPlayer('ZhangJike', function (err, user) {
             expect(err).to.be.null;
             expect(user.losses).to.eq(2);
@@ -352,9 +385,45 @@ describe('Pong', function () {
     });
   });
 
+  describe('ensureNoChallenges', function () {
+    it('returns an error when a user cannot be found', function (done) {
+      pong.ensureNoChallenges(['ZhangJike'], function (err) {
+        expect(err).not.to.be.null;
+        expect(err.message).to.eq("User 'ZhangJike' does not exist.");
+        done();
+      });
+    });
+
+    describe('with a player', function () {
+      beforeEach(function (done) {
+        pong.registerPlayer('ZhangJike', function (err, user) {
+          var challenge = new Challenge({
+            state: 'Proposed',
+            type: 'Singles',
+            date: Date.now(),
+            challenger: ['ZhangJike'],
+            challenged: ['DengYaping']
+          });
+          challenge.save(function () {
+            user.currentChallenge = challenge.id;
+            user.save(done);
+          });
+        });
+      });
+
+      it('errors with current challenge', function (done) {
+        pong.ensureNoChallenges(['ZhangJike'], function (err) {
+          expect(err).to.not.be.null;
+          expect(err.message).to.eq("There's already an active challenge between ZhangJike and DengYaping.");
+          done();
+        });
+      });
+    });
+  });
+
   describe('setChallenge', function () {
     it('returns an error when a user cannot be found', function (done) {
-      pong.setChallenge('ZhangJike', null, function(err) {
+      pong.setChallenge(['ZhangJike'], null, function(err) {
         expect(err).not.to.be.null;
         expect(err.message).to.eq("User 'ZhangJike' does not exist.");
         done();
@@ -375,7 +444,7 @@ describe('Pong', function () {
           challenged: []
         });
         challenge.save(function (err, challenge) {
-          pong.setChallenge('ZhangJike', challenge._id, function () {
+          pong.setChallenge(['ZhangJike'], challenge._id, function () {
             pong.findPlayer('ZhangJike', function (err, user) {
               expect(user.currentChallenge.equals(challenge._id)).to.be.true;
               done();
@@ -670,7 +739,7 @@ describe('Pong', function () {
             pong.registerPlayer('ChenQi', function () {
               pong.registerPlayer('ViktorBarna', function () {
                 pong.createDoubleChallenge('ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna', function (err, challenge) {
-                  pong.acceptChallenge('DengYaping', function () {
+                  pong.acceptChallenge('DengYaping', function (err) {
                     done();
                   });
                 });
