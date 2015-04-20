@@ -27,11 +27,9 @@ describe('Pong', function () {
     it('sets channel', function () {
       expect(pong.channel).to.eq('#pongbot');
     });
+
     it('sets deltaTau', function () {
       expect(pong.deltaTau).to.eq(0.94);
-    });
-    it('unsets currentChallenge', function () {
-      expect(pong.currentChallenge).to.be.false;
     });
   });
 
