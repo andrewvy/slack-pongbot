@@ -278,6 +278,16 @@ describe('Pong', function () {
           });
         });
       });
+
+      it('with an existing challenge between two of the players', function (done) {
+        pong.createSingleChallenge('ZhangJike', 'DengYaping', function (err, challenge) {
+          pong.createDoubleChallenge('ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna', function (err, challenge) {
+            expect(err).to.not.be.null;
+            expect(err.message).to.eq("There's already an active challenge between ZhangJike and DengYaping.");
+            done();
+          });
+        });
+      });
     });
   });
 
