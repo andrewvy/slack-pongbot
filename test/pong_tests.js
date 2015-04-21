@@ -405,14 +405,14 @@ describe('Pong', function () {
           pong.createSingleChallenge('ZhangJike', 'DengYaping').then(function (result) {
             expect(result.message).to.eq("ZhangJike has challenged DengYaping to a ping pong match!");
             expect(result.challenge).to.not.be.null;
-            pong.findPlayer('ZhangJike').then(function(challenger) {
+            pong.findPlayers(['ZhangJike', 'DengYaping']).then(function(players) {
+              var challenger = players[0];
+              var challenged = players[1];
               expect(challenger.currentChallenge).to.not.be.undefined;
               expect(result.challenge._id.equals(challenger.currentChallenge)).to.be.true;
-              pong.findPlayer('DengYaping').then(function (challenged) {
-                expect(challenged.currentChallenge).to.not.be.undefined;
-                expect(challenged.currentChallenge.equals(challenger.currentChallenge)).to.be.true;
-                done();
-              });
+              expect(challenged.currentChallenge).to.not.be.undefined;
+              expect(challenged.currentChallenge.equals(challenger.currentChallenge)).to.be.true;
+              done();
             });
           });
         });
@@ -449,19 +449,13 @@ describe('Pong', function () {
           expect(result).to.not.be.null;
           expect(result.message).to.eq("ZhangJike and DengYaping have challenged ChenQi and ViktorBarna to a ping pong match!");
           expect(result.challenge).to.not.be.null;
-          pong.findPlayer('ZhangJike').then(function (c1) {
-            expect(c1.currentChallenge.equals(result.challenge._id)).to.be.true;
-            pong.findPlayer('DengYaping').then(function (c2) {
-              expect(c2.currentChallenge.equals(result.challenge._id)).to.be.true;
-              pong.findPlayer('ChenQi').then(function (c3) {
-                expect(c3.currentChallenge.equals(result.challenge._id)).to.be.true;
-                pong.findPlayer('ViktorBarna').then(function (c4) {
-                  expect(c4.currentChallenge.equals(result.challenge._id)).to.be.true;
-                }).then(function () {
-                  done();
-                });
-              });
-            });
+          pong.findPlayers(['ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna']).then(function (players) {
+            expect(players[0].currentChallenge.equals(result.challenge._id)).to.be.true;
+            expect(players[1].currentChallenge.equals(result.challenge._id)).to.be.true;
+            expect(players[2].currentChallenge.equals(result.challenge._id)).to.be.true;
+            expect(players[3].currentChallenge.equals(result.challenge._id)).to.be.true;
+          }).then(function () {
+            done();
           });
         });
       });
@@ -586,9 +580,7 @@ describe('Pong', function () {
     });
 
     it('updates elo after a challenge', function (done) {
-      pong.eloSinglesChange('ZhangJike', 'DengYaping').then(function (players) {
-        var winner = players[0];
-        var loser = players[1];
+      pong.eloSinglesChange('ZhangJike', 'DengYaping').then().spread(function (winner, loser) {
         expect(winner.elo).to.eq(48);
         expect(winner.tau).to.eq(0.5);
         expect(loser.elo).to.eq(-48);
@@ -606,15 +598,15 @@ describe('Pong', function () {
     });
 
     it('updates elo after a challenge', function (done) {
-      pong.eloDoublesChange('ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna').then(function (players) {
-        expect(players[0].elo).to.eq(48);
-        expect(players[0].tau).to.eq(0.5);
-        expect(players[1].elo).to.eq(48);
-        expect(players[1].tau).to.eq(0.5);
-        expect(players[2].elo).to.eq(-48);
-        expect(players[2].tau).to.eq(0.5);
-        expect(players[3].elo).to.eq(-48);
-        expect(players[3].tau).to.eq(0.5);
+      pong.eloDoublesChange('ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna').then().spread(function (p1, p2, p3, p4) {
+        expect(p1.elo).to.eq(48);
+        expect(p1.tau).to.eq(0.5);
+        expect(p2.elo).to.eq(48);
+        expect(p2.tau).to.eq(0.5);
+        expect(p3.elo).to.eq(-48);
+        expect(p3.tau).to.eq(0.5);
+        expect(p4.elo).to.eq(-48);
+        expect(p4.tau).to.eq(0.5);
         done();
       });
     });
@@ -648,18 +640,16 @@ describe('Pong', function () {
         it('player one wins', function (done) {
           pong.win('ZhangJike').then(function (result) {
             expect(result.message).to.eq("Match has been recorded, ZhangJike defeated DengYaping.");
-            pong.findPlayer('ZhangJike').then(function (player) {
-              expect(player.wins).to.eq(1);
-              expect(player.tau).to.eq(0.5);
-              expect(player.elo).to.eq(48);
-              expect(player.losses).to.eq(0);
-              pong.findPlayer('DengYaping').then(function (player) {
-                expect(player.wins).to.eq(0);
-                expect(player.tau).to.eq(0.5);
-                expect(player.elo).to.eq(-48);
-                expect(player.losses).to.eq(1);
-                done();
-              });
+            pong.findPlayers(['ZhangJike', 'DengYaping']).then().spread(function (p1, p2) {
+              expect(p1.wins).to.eq(1);
+              expect(p1.tau).to.eq(0.5);
+              expect(p1.elo).to.eq(48);
+              expect(p1.losses).to.eq(0);
+              expect(p2.wins).to.eq(0);
+              expect(p2.tau).to.eq(0.5);
+              expect(p2.elo).to.eq(-48);
+              expect(p2.losses).to.eq(1);
+              done();
             });
           });
         });
@@ -667,18 +657,16 @@ describe('Pong', function () {
         it('player two wins', function (done) {
           pong.win('DengYaping').then(function (result) {
             expect(result.message).to.eq("Match has been recorded, DengYaping defeated ZhangJike.");
-            pong.findPlayer('DengYaping').then(function (player) {
-              expect(player.wins).to.eq(1);
-              expect(player.tau).to.eq(0.5);
-              expect(player.elo).to.eq(48);
-              expect(player.losses).to.eq(0);
-              pong.findPlayer('ZhangJike').then(function (player) {
-                expect(player.wins).to.eq(0);
-                expect(player.tau).to.eq(0.5);
-                expect(player.elo).to.eq(-48);
-                expect(player.losses).to.eq(1);
-                done();
-              });
+            pong.findPlayers(['DengYaping', 'ZhangJike']).then().spread(function (p1, p2) {
+              expect(p1.wins).to.eq(1);
+              expect(p1.tau).to.eq(0.5);
+              expect(p1.elo).to.eq(48);
+              expect(p1.losses).to.eq(0);
+              expect(p2.wins).to.eq(0);
+              expect(p2.tau).to.eq(0.5);
+              expect(p2.elo).to.eq(-48);
+              expect(p2.losses).to.eq(1);
+              done();
             });
           });
         });
@@ -686,18 +674,16 @@ describe('Pong', function () {
         it('player one loses', function (done) {
           pong.lose('ZhangJike').then(function (result) {
             expect(result.message).to.eq("Match has been recorded, DengYaping defeated ZhangJike.");
-            pong.findPlayer('ZhangJike').then(function (player) {
-              expect(player.wins).to.eq(0);
-              expect(player.tau).to.eq(0.5);
-              expect(player.elo).to.eq(-48);
-              expect(player.losses).to.eq(1);
-              pong.findPlayer('DengYaping').then(function (player) {
-                expect(player.wins).to.eq(1);
-                expect(player.tau).to.eq(0.5);
-                expect(player.elo).to.eq(48);
-                expect(player.losses).to.eq(0);
-                done();
-              });
+            pong.findPlayers(['DengYaping', 'ZhangJike']).then().spread(function (p1, p2) {
+              expect(p1.wins).to.eq(1);
+              expect(p1.tau).to.eq(0.5);
+              expect(p1.elo).to.eq(48);
+              expect(p1.losses).to.eq(0);
+              expect(p2.wins).to.eq(0);
+              expect(p2.tau).to.eq(0.5);
+              expect(p2.elo).to.eq(-48);
+              expect(p2.losses).to.eq(1);
+              done();
             });
           });
         });
@@ -705,18 +691,16 @@ describe('Pong', function () {
         it('player two loses', function (done) {
           pong.lose('DengYaping').then(function (result) {
             expect(result.message).to.eq("Match has been recorded, ZhangJike defeated DengYaping.");
-            pong.findPlayer('DengYaping').then(function (player) {
-              expect(player.wins).to.eq(0);
-              expect(player.tau).to.eq(0.5);
-              expect(player.elo).to.eq(-48);
-              expect(player.losses).to.eq(1);
-              pong.findPlayer('ZhangJike').then(function (player) {
-                expect(player.wins).to.eq(1);
-                expect(player.tau).to.eq(0.5);
-                expect(player.elo).to.eq(48);
-                expect(player.losses).to.eq(0);
-                done();
-              });
+            pong.findPlayers(['ZhangJike', 'DengYaping']).then().spread(function (p1, p2) {
+              expect(p1.wins).to.eq(1);
+              expect(p1.tau).to.eq(0.5);
+              expect(p1.elo).to.eq(48);
+              expect(p1.losses).to.eq(0);
+              expect(p2.wins).to.eq(0);
+              expect(p2.tau).to.eq(0.5);
+              expect(p2.elo).to.eq(-48);
+              expect(p2.losses).to.eq(1);
+              done();
             });
           });
         });
@@ -738,30 +722,24 @@ describe('Pong', function () {
         pong.win('ZhangJike').then(function (result) {
           expect(result).not.to.be.null;
           expect(result.message).to.eq("Match has been recorded, ZhangJike and DengYaping defeated ChenQi and ViktorBarna.");
-          pong.findPlayer('ZhangJike').then(function (player) {
-            expect(player.wins).to.eq(1);
-            expect(player.tau).to.eq(0.5);
-            expect(player.elo).to.eq(48);
-            expect(player.losses).to.eq(0);
-            pong.findPlayer('DengYaping').then(function (player) {
-              expect(player.wins).to.eq(1);
-              expect(player.tau).to.eq(0.5);
-              expect(player.elo).to.eq(48);
-              expect(player.losses).to.eq(0);
-              pong.findPlayer('ChenQi').then(function (player) {
-                expect(player.wins).to.eq(0);
-                expect(player.tau).to.eq(0.5);
-                expect(player.elo).to.eq(-48);
-                expect(player.losses).to.eq(1);
-                pong.findPlayer('ViktorBarna').then(function (player) {
-                  expect(player.wins).to.eq(0);
-                  expect(player.tau).to.eq(0.5);
-                  expect(player.elo).to.eq(-48);
-                  expect(player.losses).to.eq(1);
-                  done();
-                });
-              });
-            });
+          pong.findPlayers(['ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna']).then().spread(function (p1, p2, p3, p4) {
+            expect(p1.wins).to.eq(1);
+            expect(p1.tau).to.eq(0.5);
+            expect(p1.elo).to.eq(48);
+            expect(p1.losses).to.eq(0);
+            expect(p2.wins).to.eq(1);
+            expect(p2.tau).to.eq(0.5);
+            expect(p2.elo).to.eq(48);
+            expect(p2.losses).to.eq(0);
+            expect(p3.wins).to.eq(0);
+            expect(p3.tau).to.eq(0.5);
+            expect(p3.elo).to.eq(-48);
+            expect(p3.losses).to.eq(1);
+            expect(p4.wins).to.eq(0);
+            expect(p4.tau).to.eq(0.5);
+            expect(p4.elo).to.eq(-48);
+            expect(p4.losses).to.eq(1);
+            done();
           });
         });
       });
@@ -770,30 +748,24 @@ describe('Pong', function () {
         pong.win('DengYaping').then(function (result) {
           expect(result).not.to.be.null;
           expect(result.message).to.eq("Match has been recorded, ZhangJike and DengYaping defeated ChenQi and ViktorBarna.");
-          pong.findPlayer('ZhangJike').then(function (player) {
-            expect(player.wins).to.eq(1);
-            expect(player.tau).to.eq(0.5);
-            expect(player.elo).to.eq(48);
-            expect(player.losses).to.eq(0);
-            pong.findPlayer('DengYaping').then(function (player) {
-              expect(player.wins).to.eq(1);
-              expect(player.tau).to.eq(0.5);
-              expect(player.elo).to.eq(48);
-              expect(player.losses).to.eq(0);
-              pong.findPlayer('ChenQi').then(function (player) {
-                expect(player.wins).to.eq(0);
-                expect(player.tau).to.eq(0.5);
-                expect(player.elo).to.eq(-48);
-                expect(player.losses).to.eq(1);
-                pong.findPlayer('ViktorBarna').then(function (player) {
-                  expect(player.wins).to.eq(0);
-                  expect(player.tau).to.eq(0.5);
-                  expect(player.elo).to.eq(-48);
-                  expect(player.losses).to.eq(1);
-                  done();
-                });
-              });
-            });
+          pong.findPlayers(['ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna']).then().spread(function (p1, p2, p3, p4) {
+            expect(p1.wins).to.eq(1);
+            expect(p1.tau).to.eq(0.5);
+            expect(p1.elo).to.eq(48);
+            expect(p1.losses).to.eq(0);
+            expect(p2.wins).to.eq(1);
+            expect(p2.tau).to.eq(0.5);
+            expect(p2.elo).to.eq(48);
+            expect(p2.losses).to.eq(0);
+            expect(p3.wins).to.eq(0);
+            expect(p3.tau).to.eq(0.5);
+            expect(p3.elo).to.eq(-48);
+            expect(p3.losses).to.eq(1);
+            expect(p4.wins).to.eq(0);
+            expect(p4.tau).to.eq(0.5);
+            expect(p4.elo).to.eq(-48);
+            expect(p4.losses).to.eq(1);
+            done();
           });
         });
       });
@@ -802,30 +774,24 @@ describe('Pong', function () {
         pong.win('ChenQi').then(function (result) {
           expect(result).not.to.be.null;
           expect(result.message).to.eq("Match has been recorded, ChenQi and ViktorBarna defeated ZhangJike and DengYaping.");
-          pong.findPlayer('ChenQi').then(function (player) {
-            expect(player.wins).to.eq(1);
-            expect(player.tau).to.eq(0.5);
-            expect(player.elo).to.eq(48);
-            expect(player.losses).to.eq(0);
-            pong.findPlayer('ViktorBarna').then(function (player) {
-              expect(player.wins).to.eq(1);
-              expect(player.tau).to.eq(0.5);
-              expect(player.elo).to.eq(48);
-              expect(player.losses).to.eq(0);
-              pong.findPlayer('DengYaping').then(function (player) {
-                expect(player.wins).to.eq(0);
-                expect(player.tau).to.eq(0.5);
-                expect(player.elo).to.eq(-48);
-                expect(player.losses).to.eq(1);
-                pong.findPlayer('ZhangJike').then(function (player) {
-                  expect(player.wins).to.eq(0);
-                  expect(player.tau).to.eq(0.5);
-                  expect(player.elo).to.eq(-48);
-                  expect(player.losses).to.eq(1);
-                  done();
-                });
-              });
-            });
+          pong.findPlayers(['ChenQi', 'ViktorBarna', 'ZhangJike', 'DengYaping']).then().spread(function (p1, p2, p3, p4) {
+            expect(p1.wins).to.eq(1);
+            expect(p1.tau).to.eq(0.5);
+            expect(p1.elo).to.eq(48);
+            expect(p1.losses).to.eq(0);
+            expect(p2.wins).to.eq(1);
+            expect(p2.tau).to.eq(0.5);
+            expect(p2.elo).to.eq(48);
+            expect(p2.losses).to.eq(0);
+            expect(p3.wins).to.eq(0);
+            expect(p3.tau).to.eq(0.5);
+            expect(p3.elo).to.eq(-48);
+            expect(p3.losses).to.eq(1);
+            expect(p4.wins).to.eq(0);
+            expect(p4.tau).to.eq(0.5);
+            expect(p4.elo).to.eq(-48);
+            expect(p4.losses).to.eq(1);
+            done();
           });
         });
       });
@@ -834,30 +800,24 @@ describe('Pong', function () {
         pong.win('ViktorBarna').then(function (result) {
           expect(result).not.to.be.null;
           expect(result.message).to.eq("Match has been recorded, ChenQi and ViktorBarna defeated ZhangJike and DengYaping.");
-          pong.findPlayer('ChenQi').then(function (player) {
-            expect(player.wins).to.eq(1);
-            expect(player.tau).to.eq(0.5);
-            expect(player.elo).to.eq(48);
-            expect(player.losses).to.eq(0);
-            pong.findPlayer('ViktorBarna').then(function (player) {
-              expect(player.wins).to.eq(1);
-              expect(player.tau).to.eq(0.5);
-              expect(player.elo).to.eq(48);
-              expect(player.losses).to.eq(0);
-              pong.findPlayer('DengYaping').then(function (player) {
-                expect(player.wins).to.eq(0);
-                expect(player.tau).to.eq(0.5);
-                expect(player.elo).to.eq(-48);
-                expect(player.losses).to.eq(1);
-                pong.findPlayer('ZhangJike').then(function (player) {
-                  expect(player.wins).to.eq(0);
-                  expect(player.tau).to.eq(0.5);
-                  expect(player.elo).to.eq(-48);
-                  expect(player.losses).to.eq(1);
-                  done();
-                });
-              });
-            });
+          pong.findPlayers(['ChenQi', 'ViktorBarna', 'ZhangJike', 'DengYaping']).then().spread(function (p1, p2, p3, p4) {
+            expect(p1.wins).to.eq(1);
+            expect(p1.tau).to.eq(0.5);
+            expect(p1.elo).to.eq(48);
+            expect(p1.losses).to.eq(0);
+            expect(p2.wins).to.eq(1);
+            expect(p2.tau).to.eq(0.5);
+            expect(p2.elo).to.eq(48);
+            expect(p2.losses).to.eq(0);
+            expect(p3.wins).to.eq(0);
+            expect(p3.tau).to.eq(0.5);
+            expect(p3.elo).to.eq(-48);
+            expect(p3.losses).to.eq(1);
+            expect(p4.wins).to.eq(0);
+            expect(p4.tau).to.eq(0.5);
+            expect(p4.elo).to.eq(-48);
+            expect(p4.losses).to.eq(1);
+            done();
           });
         });
       });
@@ -866,30 +826,24 @@ describe('Pong', function () {
         pong.lose('ZhangJike').then(function (result) {
           expect(result).not.to.be.null;
           expect(result.message).to.eq("Match has been recorded, ChenQi and ViktorBarna defeated ZhangJike and DengYaping.");
-          pong.findPlayer('ChenQi').then(function (player) {
-            expect(player.wins).to.eq(1);
-            expect(player.tau).to.eq(0.5);
-            expect(player.elo).to.eq(48);
-            expect(player.losses).to.eq(0);
-            pong.findPlayer('ViktorBarna').then(function (player) {
-              expect(player.wins).to.eq(1);
-              expect(player.tau).to.eq(0.5);
-              expect(player.elo).to.eq(48);
-              expect(player.losses).to.eq(0);
-              pong.findPlayer('DengYaping').then(function (player) {
-                expect(player.wins).to.eq(0);
-                expect(player.tau).to.eq(0.5);
-                expect(player.elo).to.eq(-48);
-                expect(player.losses).to.eq(1);
-                pong.findPlayer('ZhangJike').then(function (player) {
-                  expect(player.wins).to.eq(0);
-                  expect(player.tau).to.eq(0.5);
-                  expect(player.elo).to.eq(-48);
-                  expect(player.losses).to.eq(1);
-                  done();
-                });
-              });
-            });
+          pong.findPlayers(['ChenQi', 'ViktorBarna', 'ZhangJike', 'DengYaping']).then().spread(function (p1, p2, p3, p4) {
+            expect(p1.wins).to.eq(1);
+            expect(p1.tau).to.eq(0.5);
+            expect(p1.elo).to.eq(48);
+            expect(p1.losses).to.eq(0);
+            expect(p2.wins).to.eq(1);
+            expect(p2.tau).to.eq(0.5);
+            expect(p2.elo).to.eq(48);
+            expect(p2.losses).to.eq(0);
+            expect(p3.wins).to.eq(0);
+            expect(p3.tau).to.eq(0.5);
+            expect(p3.elo).to.eq(-48);
+            expect(p3.losses).to.eq(1);
+            expect(p4.wins).to.eq(0);
+            expect(p4.tau).to.eq(0.5);
+            expect(p4.elo).to.eq(-48);
+            expect(p4.losses).to.eq(1);
+            done();
           });
         });
       });
@@ -898,30 +852,24 @@ describe('Pong', function () {
         pong.lose('DengYaping').then(function (result) {
           expect(result).not.to.be.null;
           expect(result.message).to.eq("Match has been recorded, ChenQi and ViktorBarna defeated ZhangJike and DengYaping.");
-          pong.findPlayer('ChenQi').then(function (player) {
-            expect(player.wins).to.eq(1);
-            expect(player.tau).to.eq(0.5);
-            expect(player.elo).to.eq(48);
-            expect(player.losses).to.eq(0);
-            pong.findPlayer('ViktorBarna').then(function (player) {
-              expect(player.wins).to.eq(1);
-              expect(player.tau).to.eq(0.5);
-              expect(player.elo).to.eq(48);
-              expect(player.losses).to.eq(0);
-              pong.findPlayer('DengYaping').then(function (player) {
-                expect(player.wins).to.eq(0);
-                expect(player.tau).to.eq(0.5);
-                expect(player.elo).to.eq(-48);
-                expect(player.losses).to.eq(1);
-                pong.findPlayer('ZhangJike').then(function (player) {
-                  expect(player.wins).to.eq(0);
-                  expect(player.tau).to.eq(0.5);
-                  expect(player.elo).to.eq(-48);
-                  expect(player.losses).to.eq(1);
-                  done();
-                });
-              });
-            });
+          pong.findPlayers(['ChenQi', 'ViktorBarna', 'ZhangJike', 'DengYaping']).then().spread(function (p1, p2, p3, p4) {
+            expect(p1.wins).to.eq(1);
+            expect(p1.tau).to.eq(0.5);
+            expect(p1.elo).to.eq(48);
+            expect(p1.losses).to.eq(0);
+            expect(p2.wins).to.eq(1);
+            expect(p2.tau).to.eq(0.5);
+            expect(p2.elo).to.eq(48);
+            expect(p2.losses).to.eq(0);
+            expect(p3.wins).to.eq(0);
+            expect(p3.tau).to.eq(0.5);
+            expect(p3.elo).to.eq(-48);
+            expect(p3.losses).to.eq(1);
+            expect(p4.wins).to.eq(0);
+            expect(p4.tau).to.eq(0.5);
+            expect(p4.elo).to.eq(-48);
+            expect(p4.losses).to.eq(1);
+            done();
           });
         });
       });
@@ -930,30 +878,24 @@ describe('Pong', function () {
         pong.lose('ChenQi').then(function (result) {
           expect(result).not.to.be.null;
           expect(result.message).to.eq("Match has been recorded, ZhangJike and DengYaping defeated ChenQi and ViktorBarna.");
-          pong.findPlayer('ZhangJike').then(function (player) {
-            expect(player.wins).to.eq(1);
-            expect(player.tau).to.eq(0.5);
-            expect(player.elo).to.eq(48);
-            expect(player.losses).to.eq(0);
-            pong.findPlayer('DengYaping').then(function (player) {
-              expect(player.wins).to.eq(1);
-              expect(player.tau).to.eq(0.5);
-              expect(player.elo).to.eq(48);
-              expect(player.losses).to.eq(0);
-              pong.findPlayer('ChenQi').then(function (player) {
-                expect(player.wins).to.eq(0);
-                expect(player.tau).to.eq(0.5);
-                expect(player.elo).to.eq(-48);
-                expect(player.losses).to.eq(1);
-                pong.findPlayer('ViktorBarna').then(function (player) {
-                  expect(player.wins).to.eq(0);
-                  expect(player.tau).to.eq(0.5);
-                  expect(player.elo).to.eq(-48);
-                  expect(player.losses).to.eq(1);
-                  done();
-                });
-              });
-            });
+          pong.findPlayers(['ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna']).then().spread(function (p1, p2, p3, p4) {
+            expect(p1.wins).to.eq(1);
+            expect(p1.tau).to.eq(0.5);
+            expect(p1.elo).to.eq(48);
+            expect(p1.losses).to.eq(0);
+            expect(p2.wins).to.eq(1);
+            expect(p2.tau).to.eq(0.5);
+            expect(p2.elo).to.eq(48);
+            expect(p2.losses).to.eq(0);
+            expect(p3.wins).to.eq(0);
+            expect(p3.tau).to.eq(0.5);
+            expect(p3.elo).to.eq(-48);
+            expect(p3.losses).to.eq(1);
+            expect(p4.wins).to.eq(0);
+            expect(p4.tau).to.eq(0.5);
+            expect(p4.elo).to.eq(-48);
+            expect(p4.losses).to.eq(1);
+            done();
           });
         });
       });
@@ -962,30 +904,24 @@ describe('Pong', function () {
         pong.lose('ViktorBarna').then(function (result) {
           expect(result).not.to.be.null;
           expect(result.message).to.eq("Match has been recorded, ZhangJike and DengYaping defeated ChenQi and ViktorBarna.");
-          pong.findPlayer('ZhangJike').then(function (player) {
-            expect(player.wins).to.eq(1);
-            expect(player.tau).to.eq(0.5);
-            expect(player.elo).to.eq(48);
-            expect(player.losses).to.eq(0);
-            pong.findPlayer('DengYaping').then(function (player) {
-              expect(player.wins).to.eq(1);
-              expect(player.tau).to.eq(0.5);
-              expect(player.elo).to.eq(48);
-              expect(player.losses).to.eq(0);
-              pong.findPlayer('ChenQi').then(function (player) {
-                expect(player.wins).to.eq(0);
-                expect(player.tau).to.eq(0.5);
-                expect(player.elo).to.eq(-48);
-                expect(player.losses).to.eq(1);
-                pong.findPlayer('ViktorBarna').then(function (player) {
-                  expect(player.wins).to.eq(0);
-                  expect(player.tau).to.eq(0.5);
-                  expect(player.elo).to.eq(-48);
-                  expect(player.losses).to.eq(1);
-                  done();
-                });
-              });
-            });
+          pong.findPlayers(['ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna']).then().spread(function (p1, p2, p3, p4) {
+            expect(p1.wins).to.eq(1);
+            expect(p1.tau).to.eq(0.5);
+            expect(p1.elo).to.eq(48);
+            expect(p1.losses).to.eq(0);
+            expect(p2.wins).to.eq(1);
+            expect(p2.tau).to.eq(0.5);
+            expect(p2.elo).to.eq(48);
+            expect(p2.losses).to.eq(0);
+            expect(p3.wins).to.eq(0);
+            expect(p3.tau).to.eq(0.5);
+            expect(p3.elo).to.eq(-48);
+            expect(p3.losses).to.eq(1);
+            expect(p4.wins).to.eq(0);
+            expect(p4.tau).to.eq(0.5);
+            expect(p4.elo).to.eq(-48);
+            expect(p4.losses).to.eq(1);
+            done();
           });
         });
       });
@@ -1052,18 +988,16 @@ describe('Pong', function () {
 
       it('resets all players', function (done) {
         pong.resetAll().then(function () {
-          pong.findPlayer('ZhangJike').then(function (player) {
-            expect(player.wins).to.eq(0);
-            expect(player.tau).to.eq(1);
-            expect(player.elo).to.eq(0);
-            expect(player.losses).to.eq(0);
-            pong.findPlayer('ViktorBarna').then(function (player) {
-              expect(player.wins).to.eq(0);
-              expect(player.tau).to.eq(1);
-              expect(player.elo).to.eq(0);
-              expect(player.losses).to.eq(0);
-              done();
-            });
+          pong.findPlayers(['ZhangJike', 'ViktorBarna']).then().spread(function (p1, p2) {
+            expect(p1.wins).to.eq(0);
+            expect(p1.tau).to.eq(1);
+            expect(p1.elo).to.eq(0);
+            expect(p1.losses).to.eq(0);
+            expect(p2.wins).to.eq(0);
+            expect(p2.tau).to.eq(1);
+            expect(p2.elo).to.eq(0);
+            expect(p2.losses).to.eq(0);
+            done();
           });
         });
       });
