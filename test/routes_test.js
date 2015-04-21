@@ -29,7 +29,9 @@ describe('Routes', function () {
 
   beforeEach(function (done) {
     Player.remove(function () {
-      Challenge.remove(done);
+      Challenge.remove(function () {
+        done();
+      });
     });
   });
 
@@ -45,7 +47,7 @@ describe('Routes', function () {
   });
 
   describe('register', function() {
-    it('registers a new player', function () {
+    it('registers a new player', function (done) {
       request(app)
         .post('/')
         .send({ text: 'pongbot register', user_name: 'WangHao' })
@@ -53,12 +55,13 @@ describe('Routes', function () {
         .end(function(err, res){
           if (err) throw err;
           expect(res.body.text).to.eq("Successfully registered! Welcome to the system, WangHao.");
+          done();
         });
     });
 
     describe('with a pre-registered player', function () {
       beforeEach(function (done) {
-        pong.registerPlayer('WangHao', function() {
+        pong.registerPlayer('WangHao').then(function() {
           done();
         });
       });
@@ -84,7 +87,7 @@ describe('Routes', function () {
           .send({ text: 'pongbot challenge singles ZhangJike', user_name: 'WangHao' })
           .expect(200)
           .end(function(err, res) {
-            expect(res.body.text).to.eq("User 'WangHao' does not exist. Are you registered? Use 'pongbot register' first.");
+            expect(res.body.text).to.eq("Player 'WangHao' does not exist. Are you registered? Use 'pongbot register' first.");
             done();
           });
       });
@@ -92,10 +95,8 @@ describe('Routes', function () {
 
     describe('with two players', function () {
       beforeEach(function (done) {
-        pong.registerPlayer('WangHao', function () {
-          pong.registerPlayer('ZhangJike', function () {
-            done();
-          });
+        pong.registerPlayers(['WangHao', 'ZhangJike']).then(function () {
+          done();
         });
       });
 
@@ -113,14 +114,8 @@ describe('Routes', function () {
 
     describe('with four players', function () {
       beforeEach(function (done) {
-        pong.registerPlayer('WangHao', function () {
-          pong.registerPlayer('ZhangJike', function () {
-            pong.registerPlayer('ChenQi', function () {
-              pong.registerPlayer('ViktorBarna', function () {
-                done();
-              });
-            });
-          });
+        pong.registerPlayers(['WangHao', 'ZhangJike', 'ChenQi', 'ViktorBarna']).then(function () {
+          done();
         });
       });
 
@@ -130,7 +125,7 @@ describe('Routes', function () {
           .send({ text: 'pongbot challenge doubles ChenQi against ZhangJike GuoYue', user_name: 'WangHao' })
           .expect(200)
           .end(function(err, res) {
-            expect(res.body.text).to.eq("Error: User 'GuoYue' does not exist.");
+            expect(res.body.text).to.eq("Error: Player 'GuoYue' does not exist.");
             done();
           });
       });
@@ -151,11 +146,9 @@ describe('Routes', function () {
   describe('accept and decline', function() {
     describe('with a challenge', function () {
       beforeEach(function (done) {
-        pong.registerPlayer('WangHao', function () {
-          pong.registerPlayer('ZhangJike', function () {
-            pong.createSingleChallenge('WangHao', 'ZhangJike', function () {
-              done();
-            });
+        pong.registerPlayers(['WangHao', 'ZhangJike']).then(function () {
+          pong.createSingleChallenge('WangHao', 'ZhangJike').then(function () {
+            done();
           });
         });
       });
@@ -188,12 +181,10 @@ describe('Routes', function () {
   describe('won and lost', function() {
     describe('with an accepted challenge', function () {
       beforeEach(function (done) {
-        pong.registerPlayer('WangHao', function () {
-          pong.registerPlayer('ZhangJike', function () {
-            pong.createSingleChallenge('WangHao', 'ZhangJike', function () {
-              pong.acceptChallenge('ZhangJike', function () {
-                done();
-              });
+        pong.registerPlayers(['WangHao', 'ZhangJike']).then(function () {
+          pong.createSingleChallenge('WangHao', 'ZhangJike').then(function () {
+            pong.acceptChallenge('ZhangJike').then(function () {
+              done();
             });
           });
         });
@@ -216,7 +207,7 @@ describe('Routes', function () {
           .send({ text: 'pongbot lost', user_name: 'ZhangJike' })
           .expect(200)
           .end(function(err, res) {
-            expect(res.body.text).to.eq("Match has been recorded, WangHao has defeated ZhangJike.");
+            expect(res.body.text).to.eq("Match has been recorded, WangHao defeated ZhangJike.");
             done();
           });
       });
@@ -226,7 +217,7 @@ describe('Routes', function () {
   describe('rank', function() {
     describe('with a pre-registered player', function () {
       beforeEach(function (done) {
-        pong.registerPlayer('WangHao', function() {
+        pong.registerPlayer('WangHao').then(function() {
           done();
         });
       });
@@ -246,21 +237,9 @@ describe('Routes', function () {
 
   describe('leaderboard', function() {
     beforeEach(function (done) {
-      pong.registerPlayer('WangHao', function (err, user) {
-        user.wins = 4;
-        user.losses = 3;
-        user.tau = 3;
-        user.elo = 58;
-        user.save(function () {
-          pong.registerPlayer('ZhangJike', function (err, user) {
-            user.wins = 42;
-            user.losses = 24;
-            user.tau = 3;
-            user.elo = 158;
-            user.save(function () {
-              done();
-            });
-          });
+      pong.registerPlayer('WangHao', { wins: 4, losses: 3, tau: 3, elo: 58 }).then(function (player) {
+        pong.registerPlayer('ZhangJike', { wins: 42, losses: 24, tau: 3, elo: 158 }).then(function (player) {
+          done();
         });
       });
     });
@@ -281,7 +260,7 @@ describe('Routes', function () {
     describe('with a pre-registered player', function () {
       beforeEach(function (done) {
         process.env.ADMIN_SECRET = 'admin_secret';
-        pong.registerPlayer('WangHao', function() {
+        pong.registerPlayer('WangHao').then(function() {
           done();
         });
       });
@@ -336,19 +315,9 @@ describe('Routes', function () {
 
     describe('with two players', function () {
       beforeEach(function (done) {
-        pong.registerPlayer('ZhangJike', function (err, user) {
-          user.wins = 42;
-          user.losses = 24;
-          user.tau = 3;
-          user.elo = 158;
-          user.save(function () {
-            pong.registerPlayer('ViktorBarna', function (err, user) {
-              user.wins = 4;
-              user.losses = 4;
-              user.tau = 3;
-              user.elo = 18;
-              done();
-            });
+        pong.registerPlayer('ZhangJike', { wins: 42, losses: 24, tau: 3, elo: 158 }).then(function (player) {
+          pong.registerPlayer('ViktorBarna', { wins: 4, losses: 4, tau: 3, elo: 18 }).then(function (player) {
+            done();
           });
         });
       });
@@ -360,7 +329,11 @@ describe('Routes', function () {
           .expect(200)
           .end(function(err, res) {
             expect(res.body.text).to.eq("Welcome to the new season!");
-            done();
+            pong.findPlayers(['ZhangJike', 'ViktorBarna']).then().spread(function (p1, p2) {
+              expect(p1.wins).to.eq(0);
+              expect(p2.wins).to.eq(0);
+              done();
+            });
           });
       });
     });

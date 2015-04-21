@@ -9,7 +9,8 @@
     "body-parser": "",
     "mongoose": "",
     "request": "",
-    "pluralize": ""
+    "pluralize": "",
+    "q": ""
   },
   "devDependencies": {
     "mocha": "",
