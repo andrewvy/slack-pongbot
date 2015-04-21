@@ -551,15 +551,9 @@ describe('Pong', function () {
 
   describe('calculateTeamElo', function () {
     beforeEach('with two players', function (done) {
-      pong.registerPlayer('ZhangJike').then(function (player1) {
-        player1.elo = 4;
-        player1.save().then(function () {
-          pong.registerPlayer('DengYaping').then(function (player2) {
-            player2.elo = 2;
-            player2.save().then(function () {
-              done();
-            });
-          });
+      pong.registerPlayer('ZhangJike', { elo: 4 }).then(function (player1) {
+        pong.registerPlayer('DengYaping', { elo: 2 }).then(function (player2) {
+          done();
         });
       });
     });
@@ -939,14 +933,8 @@ describe('Pong', function () {
 
     describe('with a player', function () {
       beforeEach(function (done) {
-        pong.registerPlayer('ZhangJike').then(function (player) {
-          player.wins = 42;
-          player.losses = 24;
-          player.tau = 3;
-          player.elo = 158;
-          player.save().then(function () {
-            done();
-          });
+        pong.registerPlayer('ZhangJike', { wins: 42, losses: 24, tau: 3, elo: 158 }).then(function (player) {
+          done();
         });
       });
 
@@ -967,21 +955,9 @@ describe('Pong', function () {
   describe('resetAll', function () {
     describe('with two players', function () {
       beforeEach(function (done) {
-        pong.registerPlayer('ZhangJike').then(function (player) {
-          player.wins = 42;
-          player.losses = 24;
-          player.tau = 3;
-          player.elo = 158;
-          player.save(function () {
-            pong.registerPlayer('ViktorBarna').then(function (player) {
-              player.wins = 4;
-              player.losses = 4;
-              player.tau = 3;
-              player.elo = 18;
-              player.save(function () {
-                done();
-              });
-            });
+        pong.registerPlayer('ZhangJike', { wins: 42, losses: 24, tau: 3, elo: 158 }).then(function (player) {
+          pong.registerPlayer('ViktorBarna', { wins: 4, losses: 4, tau: 3, elo: 18 }).then(function (player) {
+            done();
           });
         });
       });

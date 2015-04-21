@@ -237,21 +237,9 @@ describe('Routes', function () {
 
   describe('leaderboard', function() {
     beforeEach(function (done) {
-      pong.registerPlayer('WangHao').then(function (player) {
-        player.wins = 4;
-        player.losses = 3;
-        player.tau = 3;
-        player.elo = 58;
-        player.save().then(function (player) {
-          pong.registerPlayer('ZhangJike').then(function (player) {
-            player.wins = 42;
-            player.losses = 24;
-            player.tau = 3;
-            player.elo = 158;
-            player.save().then(function () {
-              done();
-            });
-          });
+      pong.registerPlayer('WangHao', { wins: 4, losses: 3, tau: 3, elo: 58 }).then(function (player) {
+        pong.registerPlayer('ZhangJike', { wins: 42, losses: 24, tau: 3, elo: 158 }).then(function (player) {
+          done();
         });
       });
     });
@@ -327,19 +315,9 @@ describe('Routes', function () {
 
     describe('with two players', function () {
       beforeEach(function (done) {
-        pong.registerPlayer('ZhangJike').then(function (player) {
-          player.wins = 42;
-          player.losses = 24;
-          player.tau = 3;
-          player.elo = 158;
-          player.save(function () {
-            pong.registerPlayer('ViktorBarna').then(function (player) {
-              player.wins = 4;
-              player.losses = 4;
-              player.tau = 3;
-              player.elo = 18;
-              done();
-            });
+        pong.registerPlayer('ZhangJike', { wins: 42, losses: 24, tau: 3, elo: 158 }).then(function (player) {
+          pong.registerPlayer('ViktorBarna', { wins: 4, losses: 4, tau: 3, elo: 18 }).then(function (player) {
+            done();
           });
         });
       });
@@ -351,7 +329,11 @@ describe('Routes', function () {
           .expect(200)
           .end(function(err, res) {
             expect(res.body.text).to.eq("Welcome to the new season!");
-            done();
+            pong.findPlayers(['ZhangJike', 'ViktorBarna']).then().spread(function (p1, p2) {
+              expect(p1.wins).to.eq(0);
+              expect(p2.wins).to.eq(0);
+              done();
+            });
           });
       });
     });
