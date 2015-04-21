@@ -76,14 +76,6 @@ describe('Pong', function () {
           done();
         });
       });
-
-      it('finds a @player', function (done) {
-        pong.findPlayer('@ZhangJike').then(function (player) {
-          expect(player).not.to.be.null;
-          expect(player.user_name).to.eq('ZhangJike');
-          done();
-        });
-      });
     });
 
     describe('without a player', function () {
