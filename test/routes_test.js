@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var pong = require('../lib/pong.js');
 var Player = require('../models/Player');
 var Challenge = require('../models/Challenge');
+var sinon = require('sinon');
 
 var request = require('supertest');
 var express = require('express');
@@ -266,7 +267,7 @@ describe('Routes', function () {
       });
 
       afterEach(function () {
-        process.env.ADMIN_SECRET = null;
+        delete process.env.ADMIN_SECRET;
       });
 
       it('with the wrong admin secret', function (done) {
@@ -299,7 +300,7 @@ describe('Routes', function () {
     });
 
     afterEach(function () {
-      process.env.ADMIN_SECRET = null;
+      delete process.env.ADMIN_SECRET;
     });
 
     it('with the wrong admin secret', function (done) {
@@ -362,6 +363,50 @@ describe('Routes', function () {
           if (err) throw err;
           expect(res.body.text).to.eq("https://github.com/andrewvy/slack-pongbot");
         });
+    });
+  });
+
+  describe('LOG_LEVEL', function() {
+    beforeEach(function () {
+      sinon.spy(console, 'log');
+    });
+
+    afterEach(function () {
+      console.log.restore();
+    });
+
+    it("doesn't log", function (done) {
+      request(app)
+        .post('/')
+        .send({ text: 'pongbot help' })
+        .expect(200)
+        .end(function(err, res){
+          if (err) throw err;
+          expect(console.log.calledOnce).to.be.false;
+          done();
+        });
+    });
+
+    describe('with LOG_LEVEL=debug', function () {
+      beforeEach(function () {
+        process.env.LOG_LEVEL = 'debug';
+      });
+
+      afterEach(function () {
+        delete(process.env.LOG_LEVEL);
+      });
+
+      it("logs hook", function (done) {
+        request(app)
+          .post('/')
+          .send({ text: 'pongbot help' })
+          .expect(200)
+          .end(function(err, res){
+            if (err) throw err;
+            expect(console.log.calledOnce).to.be.true;
+            done();
+          });
+      });
     });
   });
 
