@@ -175,6 +175,17 @@ describe('Routes', function () {
             done();
           });
       });
+
+      it('chickens out of a challenge', function (done) {
+        request(app)
+          .post('/')
+          .send({ text: 'pongbot chicken', user_name: 'WangHao' })
+          .expect(200)
+          .end(function(err, res) {
+            expect(res.body.text).to.eq("WangHao chickened out of the challenge against ZhangJike.");
+            done();
+          });
+      });
     });
 
   });

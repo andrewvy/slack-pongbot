@@ -636,6 +636,81 @@ describe('Pong', function () {
     });
   });
 
+  describe('chickenChallenge', function () {
+    describe('with a singles challenge', function () {
+      beforeEach(function (done) {
+        pong.registerPlayers(['ZhangJike', 'DengYaping']).then(function () {
+          pong.createSingleChallenge('ZhangJike', 'DengYaping').then(function () {
+            done();
+          });
+        });
+      });
+
+      it('chickens out of the challenge', function (done) {
+        pong.chickenChallenge('ZhangJike').then(function (result) {
+          expect(result.message).to.eq("ZhangJike chickened out of the challenge against DengYaping.");
+          expect(result.challenge.state).to.eq('Chickened');
+          done();
+        });
+      });
+
+      it("can't chicken out of the challenge twice", function (done) {
+        pong.chickenChallenge('ZhangJike').then(function (result) {
+          pong.chickenChallenge('ZhangJike').then(undefined, function (err) {
+            expect(err.message).to.eq("First, challenge someone!");
+            done();
+          });
+        });
+      });
+
+      it("can't chicken out of someone else's challenge", function (done) {
+        pong.chickenChallenge('DengYaping').then(undefined, function (err) {
+          expect(err.message).to.eq("Only ZhangJike can do that.");
+          done();
+        });
+      });
+    });
+
+    describe('with a doubles challenge', function () {
+      beforeEach(function (done) {
+        pong.registerPlayers(['ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna']).then(function () {
+          pong.createDoubleChallenge('ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna').then(function () {
+            done();
+          });
+        });
+      });
+
+      it('chickens out of the challenge with opponent one', function (done) {
+        pong.chickenChallenge('ZhangJike').then(function (result) {
+          expect(result.message).to.eq("ZhangJike chickened out of the challenge against ChenQi and ViktorBarna.");
+          expect(result.challenge.state).to.eq('Chickened');
+          done();
+        });
+      });
+
+      it("can't chiceck out of the the challenge with player two", function (done) {
+        pong.chickenChallenge('DengYaping').then(undefined, function (err) {
+          expect(err.message).to.eq('Only ZhangJike can do that.');
+          done();
+        });
+      });
+
+      it("can't chiceck out of the the challenge with player three", function (done) {
+        pong.chickenChallenge('ChenQi').then(undefined, function (err) {
+          expect(err.message).to.eq('Only ZhangJike can do that.');
+          done();
+        });
+      });
+
+      it("can't chiceck out of the the challenge with player four", function (done) {
+        pong.chickenChallenge('ViktorBarna').then(undefined, function (err) {
+          expect(err.message).to.eq('Only ZhangJike can do that.');
+          done();
+        });
+      });
+    });
+  });
+
   describe('calculateTeamElo', function () {
     beforeEach('with two players', function (done) {
       pong.registerPlayer('ZhangJike', { elo: 4 }).then(function (player1) {
