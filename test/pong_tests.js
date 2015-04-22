@@ -473,7 +473,7 @@ describe('Pong', function () {
   });
 
   describe('acceptChallenge', function () {
-    describe('with a challenge', function () {
+    describe('with a singles challenge', function () {
       beforeEach(function (done) {
         pong.registerPlayers(['ZhangJike', 'DengYaping']).then(function () {
           pong.createSingleChallenge('ZhangJike', 'DengYaping').then(function () {
@@ -499,6 +499,13 @@ describe('Pong', function () {
         });
       });
 
+      it("can't accept your own challenge", function (done) {
+        pong.acceptChallenge('ZhangJike').then(undefined, function (err) {
+          expect(err.message).to.eq('Please wait for DengYaping to accept your challenge.');
+          done();
+        });
+      });
+
       it("can't accept a challenge that doesn't exist", function (done) {
         pong.registerPlayer('ChenQi').then(function () {
           pong.acceptChallenge('DengYaping').then(function (challenge) {
@@ -510,10 +517,50 @@ describe('Pong', function () {
         });
       });
     });
+
+    describe('with a doubles challenge', function () {
+      beforeEach(function (done) {
+        pong.registerPlayers(['ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna']).then(function () {
+          pong.createDoubleChallenge('ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna').then(function () {
+            done();
+          });
+        });
+      });
+
+      it('accepts challenge with opponent one', function (done) {
+        pong.acceptChallenge('ChenQi').then(function (result) {
+          expect(result.message).to.eq("ChenQi accepted ZhangJike and DengYaping's challenge.");
+          expect(result.challenge.state).to.eq('Accepted');
+          done();
+        });
+      });
+
+      it('accepts challenge with opponent two', function (done) {
+        pong.acceptChallenge('ViktorBarna').then(function (result) {
+          expect(result.message).to.eq("ViktorBarna accepted ZhangJike and DengYaping's challenge.");
+          expect(result.challenge.state).to.eq('Accepted');
+          done();
+        });
+      });
+
+      it("can't accept your own challenge with player one", function (done) {
+        pong.acceptChallenge('ZhangJike').then(undefined, function (err) {
+          expect(err.message).to.eq('Please wait for ChenQi or ViktorBarna to accept your challenge.');
+          done();
+        });
+      });
+
+      it("can't accept your own challenge with player two", function (done) {
+        pong.acceptChallenge('DengYaping').then(undefined, function (err) {
+          expect(err.message).to.eq('Please wait for ChenQi or ViktorBarna to accept your challenge.');
+          done();
+        });
+      });
+    });
   });
 
   describe('declineChallenge', function () {
-    describe('with a challenge', function () {
+    describe('with a singles challenge', function () {
       beforeEach(function (done) {
         pong.registerPlayers(['ZhangJike', 'DengYaping']).then(function () {
           pong.createSingleChallenge('ZhangJike', 'DengYaping').then(function () {
@@ -530,12 +577,60 @@ describe('Pong', function () {
         });
       });
 
+      it("can't decline your own challenge", function (done) {
+        pong.declineChallenge('ZhangJike').then(undefined, function (err) {
+          expect(err.message).to.eq("Please wait for DengYaping to accept or decline your challenge.");
+          done();
+        });
+      });
+
       it("can't decline a challenge twice", function (done) {
         pong.declineChallenge('DengYaping').then(function (challenge) {
           pong.declineChallenge('DengYaping').then(undefined, function (err) {
             expect(err.message).to.eq("No challenge to decline.");
             done();
           });
+        });
+      });
+    });
+
+    describe('with a doubles challenge', function () {
+      beforeEach(function (done) {
+        pong.registerPlayers(['ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna']).then(function () {
+          pong.createDoubleChallenge('ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna').then(function () {
+            done();
+          });
+        });
+      });
+
+      it('declines challenge with opponent one', function (done) {
+        pong.declineChallenge('ChenQi').then(function (result) {
+          expect(result.message).to.eq("ChenQi declined ZhangJike and DengYaping's challenge.");
+          expect(result.challenge.state).to.eq('Declined');
+          done();
+        });
+      });
+
+      it('declines challenge with opponent two', function (done) {
+        pong.declineChallenge('ViktorBarna').then(function (result) {
+          expect(result.message).to.eq("ViktorBarna declined ZhangJike and DengYaping's challenge.");
+          expect(result.challenge.state).to.eq('Declined');
+          done();
+        });
+      });
+
+      it("can't decline your own challenge with player one", function (done) {
+        pong.declineChallenge('ZhangJike').then(undefined, function (err) {
+          expect(err.message).to.eq('Please wait for ChenQi or ViktorBarna to accept or decline your challenge.');
+          done();
+        });
+      });
+
+      it("can decline your own challenge with player two", function (done) {
+        pong.declineChallenge('DengYaping').then(function (result) {
+          expect(result.message).to.eq("DengYaping declined ZhangJike's challenge against ChenQi and ViktorBarna.");
+          expect(result.challenge.state).to.eq('Declined');
+          done();
         });
       });
     });
@@ -697,7 +792,7 @@ describe('Pong', function () {
       beforeEach(function (done) {
         pong.registerPlayers(['ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna']).then(function () {
           pong.createDoubleChallenge('ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna').then(function (challenge) {
-            pong.acceptChallenge('DengYaping').then(function () {
+            pong.acceptChallenge('ChenQi').then(function () {
                 done();
             });
           });
