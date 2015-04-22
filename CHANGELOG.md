@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2015/04/22: [#50](https://github.com/andrewvy/slack-pongbot/issues/33) - You can `chicken` out of your own challenge - [@dblock](https://github.com/dblock).
 * 2015/04/22: [#50](https://github.com/andrewvy/slack-pongbot/issues/50) - You can no longer accept or decline your own challenges - [@dblock](https://github.com/dblock).
 * 2015/04/21: [#49](https://github.com/andrewvy/slack-pongbot/pull/49) - Set LOG_LEVEL=debug to log the Slack hook data - [@dblock](https://github.com/dblock).
 * 2015/04/21: [#48](https://github.com/andrewvy/slack-pongbot/pull/48) - Use shrinkwrap and lock at node 10.x - [@dblock](https://github.com/dblock).
