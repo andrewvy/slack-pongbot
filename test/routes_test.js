@@ -1,40 +1,17 @@
 var chai = require('chai');
 chai.use(require('chai-string'));
 var expect = chai.expect;
-var mongoose = require('mongoose');
-var pong = require('../lib/pong.js');
+var pong = require('../lib/pong');
 var Player = require('../models/Player');
 var Challenge = require('../models/Challenge');
 var sinon = require('sinon');
 
 var request = require('supertest');
-var express = require('express');
-var routes = require('../lib/routes.js');
-
-var app = express();
-
-var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
-app.post('/', routes.index);
+var routes = require('../lib/routes');
+var app = require('../lib/app').instance();
 
 describe('Routes', function () {
-  before(function (done) {
-    pong.init();
-    mongoose.connect('mongodb://localhost/pingpong_test', done);
-  });
-
-  after(function (done) {
-    mongoose.disconnect(done);
-  });
-
-  beforeEach(function (done) {
-    Player.remove(function () {
-      Challenge.remove(function () {
-        done();
-      });
-    });
-  });
+  require('./shared').setup();
 
   it('unknown command', function () {
     request(app)

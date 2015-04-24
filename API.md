@@ -2,10 +2,10 @@
 
 ### Endpoints:
 
-## /api/rankings
+## /api/players
 
 ```
-GET /api/rankings
+GET /api/players
 ```
 
 Returns an array of all player objects, sorted by elo.
@@ -45,13 +45,13 @@ Example:
 ]
 ```
 
-## /api/matches
+## /api/challenges
 
 ```
-GET /api/matches
+GET /api/challenges
 ```
 
-Returns the last 10 matches, ordered by date.
+Returns the last 10 challenges, ordered by date.
 
 ```json
 [

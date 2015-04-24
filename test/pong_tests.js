@@ -4,34 +4,10 @@ var expect = chai.expect;
 var pong = require('../lib/pong.js');
 var Player = require('../models/Player');
 var Challenge = require('../models/Challenge');
-var mongoose = require('mongoose');
 var sinon = require('sinon');
 
 describe('Pong', function () {
-  before(function (done) {
-    pong.init();
-    mongoose.connect('mongodb://localhost/pingpong_test', done);
-  });
-
-  after(function (done) {
-    mongoose.disconnect(done);
-  });
-
-  beforeEach(function (done) {
-    Player.remove(function () {
-      Challenge.remove(done);
-    });
-  });
-
-  describe('#init()', function () {
-    it('sets channel', function () {
-      expect(pong.channel).to.eq('#pongbot');
-    });
-
-    it('sets deltaTau', function () {
-      expect(pong.deltaTau).to.eq(0.94);
-    });
-  });
+  require('./shared').setup();
 
   describe('#registerPlayer', function () {
     beforeEach(function (done) {
