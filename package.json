@@ -5,9 +5,11 @@
   "main": "app.js",
   "dependencies": {
     "express": "^4.10.6",
+    "express-hal": "",
     "node-slack": "^0.0.5",
     "body-parser": "",
     "mongoose": "",
+    "mongoose-pages": "",
     "request": "",
     "pluralize": "",
     "q": ""

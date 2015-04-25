@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var mongoosePages = require('mongoose-pages');
 var Schema = mongoose.Schema;
 
 var PlayerSchema = new Schema({
@@ -10,6 +11,23 @@ var PlayerSchema = new Schema({
 	currentChallenge: { type: Schema.Types.ObjectId, ref: 'Challenge' }
 });
 
-var Player = mongoose.model('Player', PlayerSchema);
+mongoosePages.anchor(PlayerSchema);
 
+PlayerSchema.methods = {
+  halJSON: function (req) {
+    return {
+      data: {
+        user_name: this.user_name,
+        wins: this.wins,
+        losses: this.losses,
+        elo: this.elo
+      },
+      links: {
+        self: req.rootUrl() + '/players/' + this._id,
+      }
+    };
+  }
+};
+
+var Player = mongoose.model('Player', PlayerSchema);
 module.exports = Player;
