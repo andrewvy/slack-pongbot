@@ -12,7 +12,8 @@
     "mongoose-pages": "",
     "request": "",
     "pluralize": "",
-    "q": ""
+    "q": "",
+    "underscore": ""
   },
   "engines": {
     "node": "0.10.x",

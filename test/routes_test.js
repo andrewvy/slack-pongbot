@@ -232,6 +232,17 @@ describe('Routes', function () {
             done();
           });
       });
+
+      it('tolerates lots of spaces', function (done) {
+        request(app)
+          .post('/')
+          .send({ text: 'pongbot  rank  WangHao  ' })
+          .expect(200)
+          .end(function(err, res) {
+            expect(res.body.text).to.eq("WangHao: 0 wins 0 losses (elo: 0)");
+            done();
+          });
+      });
     });
   });
 
