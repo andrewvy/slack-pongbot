@@ -272,21 +272,120 @@ describe('Routes', function () {
     beforeEach(function (done) {
       pong.registerPlayer('WangHao', { wins: 4, losses: 3, tau: 3, elo: 58 }).then(function (player) {
         pong.registerPlayer('ZhangJike', { wins: 42, losses: 24, tau: 3, elo: 158 }).then(function (player) {
-          done();
+          pong.registerPlayer('A', { wins: 20, losses: 3, tau: 3, elo: 57 }).then(function (player) {
+            pong.registerPlayer('B', { wins: 19, losses: 3, tau: 3, elo: 56 }).then(function (player) {
+              pong.registerPlayer('C', { wins: 18, losses: 3, tau: 3, elo: 55 }).then(function (player) {
+                pong.registerPlayer('D', { wins: 17, losses: 3, tau: 3, elo: 54 }).then(function (player) {
+                  done();
+                });
+              });
+            });
+          });
         });
       });
     });
 
-    it('returns leaderboard', function (done) {
+    it('infinity', function (done) {
       request(app)
         .post('/')
-        .send({ text: 'pongbot leaderboard 5', user_name: 'WangHao' })
+        .send({ text: 'pongbot leaderboard infinity', user_name: 'WangHao' })
         .expect(200)
         .end(function(err, res) {
-          expect(res.body.text).to.eq("1. ZhangJike: 42 wins 24 losses (elo: 158)\n2. WangHao: 4 wins 3 losses (elo: 58)\n");
+          expect(res.body.text).to.eq(
+            "1. ZhangJike: 42 wins 24 losses (elo: 158)\n" +
+            "2. WangHao: 4 wins 3 losses (elo: 58)\n" +
+            "3. A: 20 wins 3 losses (elo: 57)\n" +
+            "4. B: 19 wins 3 losses (elo: 56)\n" +
+            "5. C: 18 wins 3 losses (elo: 55)\n" +
+            "6. D: 17 wins 3 losses (elo: 54)\n"
+          );
           done();
         });
     });
+
+    it('Infinity', function (done) {
+      request(app)
+        .post('/')
+        .send({ text: 'pongbot leaderboard Infinity', user_name: 'WangHao' })
+        .expect(200)
+        .end(function(err, res) {
+          expect(res.body.text).to.eq(
+            "1. ZhangJike: 42 wins 24 losses (elo: 158)\n" +
+            "2. WangHao: 4 wins 3 losses (elo: 58)\n" +
+            "3. A: 20 wins 3 losses (elo: 57)\n" +
+            "4. B: 19 wins 3 losses (elo: 56)\n" +
+            "5. C: 18 wins 3 losses (elo: 55)\n" +
+            "6. D: 17 wins 3 losses (elo: 54)\n"
+          );
+          done();
+        });
+    });
+
+    it('99', function (done) {
+      request(app)
+        .post('/')
+        .send({ text: 'pongbot leaderboard infinity', user_name: 'WangHao' })
+        .expect(200)
+        .end(function(err, res) {
+          expect(res.body.text).to.eq(
+            "1. ZhangJike: 42 wins 24 losses (elo: 158)\n" +
+            "2. WangHao: 4 wins 3 losses (elo: 58)\n" +
+            "3. A: 20 wins 3 losses (elo: 57)\n" +
+            "4. B: 19 wins 3 losses (elo: 56)\n" +
+            "5. C: 18 wins 3 losses (elo: 55)\n" +
+            "6. D: 17 wins 3 losses (elo: 54)\n"
+          );
+          done();
+        });
+    });
+
+    it('without arguments', function (done) {
+      request(app)
+        .post('/')
+        .send({ text: 'pongbot leaderboard', user_name: 'WangHao' })
+        .expect(200)
+        .end(function(err, res) {
+          expect(res.body.text).to.eq(
+            "1. ZhangJike: 42 wins 24 losses (elo: 158)\n" +
+            "2. WangHao: 4 wins 3 losses (elo: 58)\n" +
+            "3. A: 20 wins 3 losses (elo: 57)\n" +
+            "4. B: 19 wins 3 losses (elo: 56)\n" +
+            "5. C: 18 wins 3 losses (elo: 55)\n"
+          );
+          done();
+        });
+    });
+
+    it('eLiTe', function (done) {
+      request(app)
+        .post('/')
+        .send({ text: 'pongbot LeADeRBoaRD', user_name: 'WangHao' })
+        .expect(200)
+        .end(function(err, res) {
+          expect(res.body.text).to.eq(
+            "1. ZhangJike: 42 wins 24 losses (elo: 158)\n" +
+            "2. WangHao: 4 wins 3 losses (elo: 58)\n" +
+            "3. A: 20 wins 3 losses (elo: 57)\n" +
+            "4. B: 19 wins 3 losses (elo: 56)\n" +
+            "5. C: 18 wins 3 losses (elo: 55)\n"
+          );
+          done();
+        });
+    });
+    it('2', function (done) {
+      request(app)
+        .post('/')
+        .send({ text: 'pongbot leaderboard 2', user_name: 'WangHao' })
+        .expect(200)
+        .end(function(err, res) {
+          expect(res.body.text).to.eq(
+            "1. ZhangJike: 42 wins 24 losses (elo: 158)\n" +
+            "2. WangHao: 4 wins 3 losses (elo: 58)\n"
+          );
+          done();
+        });
+    });
+
   });
 
   describe('reset', function() {
