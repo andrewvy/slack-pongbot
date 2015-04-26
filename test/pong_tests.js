@@ -54,6 +54,15 @@ describe('Pong', function () {
         });
       });
 
+      it('finds a player by lowercase name', function (done) {
+        pong.findPlayer('zhangjike').then(function (player) {
+          expect(player).not.to.be.null;
+          expect(player.user_id).to.eq('U02BEFY4U');
+          expect(player.user_name).to.eq('ZhangJike');
+          done();
+        });
+      });
+
       it('finds a player by ID', function (done) {
         pong.findPlayer('<@U02BEFY4U>').then(function (player) {
           expect(player).not.to.be.null;

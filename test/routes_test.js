@@ -20,7 +20,7 @@ describe('Routes', function () {
       .expect(200)
       .end(function(err, res){
         if (err) throw err;
-        expect(res.body.text).to.eq("I couldn't understand that command. Use 'pongbot help' to get a list of available commands.");
+        expect(res.body.text).to.eq("I couldn't understand that command. Use _pongbot help_ to get a list of available commands.");
       });
   });
 
@@ -76,7 +76,7 @@ describe('Routes', function () {
           .send({ text: 'pongbot challenge singles ZhangJike', user_name: 'WangHao' })
           .expect(200)
           .end(function(err, res) {
-            expect(res.body.text).to.eq("Player 'WangHao' does not exist. Are you registered? Use 'pongbot register' first.");
+            expect(res.body.text).to.eq("Player 'WangHao' does not exist. Are you registered? Use _pongbot register_ first.");
             done();
           });
       });
@@ -93,6 +93,17 @@ describe('Routes', function () {
         request(app)
           .post('/')
           .send({ text: 'pongbot challenge singles ZhangJike', user_name: 'WangHao' })
+          .expect(200)
+          .end(function(err, res) {
+            expect(res.body.text).to.startsWith("WangHao has challenged ZhangJike to a ping pong match!");
+            done();
+          });
+      });
+
+      it('creates a challenge with case insensitive usernames', function (done) {
+        request(app)
+          .post('/')
+          .send({ text: 'pongbot challenge singles zhangjike', user_name: 'wanghao' })
           .expect(200)
           .end(function(err, res) {
             expect(res.body.text).to.startsWith("WangHao has challenged ZhangJike to a ping pong match!");
@@ -123,6 +134,17 @@ describe('Routes', function () {
         request(app)
           .post('/')
           .send({ text: 'pongbot challenge doubles ChenQi against ZhangJike ViktorBarna', user_name: 'WangHao' })
+          .expect(200)
+          .end(function(err, res) {
+            expect(res.body.text).to.startsWith("WangHao and ChenQi have challenged ZhangJike and ViktorBarna to a ping pong match!");
+            done();
+          });
+      });
+
+      it('creates a challenge with case-insensitive usernames', function (done) {
+        request(app)
+          .post('/')
+          .send({ text: 'pongbot challenge doubles chenQi against zhangJike viktorBarna', user_name: 'wangHao' })
           .expect(200)
           .end(function(err, res) {
             expect(res.body.text).to.startsWith("WangHao and ChenQi have challenged ZhangJike and ViktorBarna to a ping pong match!");
@@ -232,6 +254,17 @@ describe('Routes', function () {
             done();
           });
       });
+
+      it('tolerates lots of spaces', function (done) {
+        request(app)
+          .post('/')
+          .send({ text: 'pongbot  rank  WangHao  ' })
+          .expect(200)
+          .end(function(err, res) {
+            expect(res.body.text).to.eq("WangHao: 0 wins 0 losses (elo: 0)");
+            done();
+          });
+      });
     });
   });
 
@@ -239,21 +272,120 @@ describe('Routes', function () {
     beforeEach(function (done) {
       pong.registerPlayer('WangHao', { wins: 4, losses: 3, tau: 3, elo: 58 }).then(function (player) {
         pong.registerPlayer('ZhangJike', { wins: 42, losses: 24, tau: 3, elo: 158 }).then(function (player) {
-          done();
+          pong.registerPlayer('A', { wins: 20, losses: 3, tau: 3, elo: 57 }).then(function (player) {
+            pong.registerPlayer('B', { wins: 19, losses: 3, tau: 3, elo: 56 }).then(function (player) {
+              pong.registerPlayer('C', { wins: 18, losses: 3, tau: 3, elo: 55 }).then(function (player) {
+                pong.registerPlayer('D', { wins: 17, losses: 3, tau: 3, elo: 54 }).then(function (player) {
+                  done();
+                });
+              });
+            });
+          });
         });
       });
     });
 
-    it('returns leaderboard', function (done) {
+    it('infinity', function (done) {
       request(app)
         .post('/')
-        .send({ text: 'pongbot leaderboard 5', user_name: 'WangHao' })
+        .send({ text: 'pongbot leaderboard infinity', user_name: 'WangHao' })
         .expect(200)
         .end(function(err, res) {
-          expect(res.body.text).to.eq("1. ZhangJike: 42 wins 24 losses (elo: 158)\n2. WangHao: 4 wins 3 losses (elo: 58)\n");
+          expect(res.body.text).to.eq(
+            "1. ZhangJike: 42 wins 24 losses (elo: 158)\n" +
+            "2. WangHao: 4 wins 3 losses (elo: 58)\n" +
+            "3. A: 20 wins 3 losses (elo: 57)\n" +
+            "4. B: 19 wins 3 losses (elo: 56)\n" +
+            "5. C: 18 wins 3 losses (elo: 55)\n" +
+            "6. D: 17 wins 3 losses (elo: 54)\n"
+          );
           done();
         });
     });
+
+    it('Infinity', function (done) {
+      request(app)
+        .post('/')
+        .send({ text: 'pongbot leaderboard Infinity', user_name: 'WangHao' })
+        .expect(200)
+        .end(function(err, res) {
+          expect(res.body.text).to.eq(
+            "1. ZhangJike: 42 wins 24 losses (elo: 158)\n" +
+            "2. WangHao: 4 wins 3 losses (elo: 58)\n" +
+            "3. A: 20 wins 3 losses (elo: 57)\n" +
+            "4. B: 19 wins 3 losses (elo: 56)\n" +
+            "5. C: 18 wins 3 losses (elo: 55)\n" +
+            "6. D: 17 wins 3 losses (elo: 54)\n"
+          );
+          done();
+        });
+    });
+
+    it('99', function (done) {
+      request(app)
+        .post('/')
+        .send({ text: 'pongbot leaderboard infinity', user_name: 'WangHao' })
+        .expect(200)
+        .end(function(err, res) {
+          expect(res.body.text).to.eq(
+            "1. ZhangJike: 42 wins 24 losses (elo: 158)\n" +
+            "2. WangHao: 4 wins 3 losses (elo: 58)\n" +
+            "3. A: 20 wins 3 losses (elo: 57)\n" +
+            "4. B: 19 wins 3 losses (elo: 56)\n" +
+            "5. C: 18 wins 3 losses (elo: 55)\n" +
+            "6. D: 17 wins 3 losses (elo: 54)\n"
+          );
+          done();
+        });
+    });
+
+    it('without arguments', function (done) {
+      request(app)
+        .post('/')
+        .send({ text: 'pongbot leaderboard', user_name: 'WangHao' })
+        .expect(200)
+        .end(function(err, res) {
+          expect(res.body.text).to.eq(
+            "1. ZhangJike: 42 wins 24 losses (elo: 158)\n" +
+            "2. WangHao: 4 wins 3 losses (elo: 58)\n" +
+            "3. A: 20 wins 3 losses (elo: 57)\n" +
+            "4. B: 19 wins 3 losses (elo: 56)\n" +
+            "5. C: 18 wins 3 losses (elo: 55)\n"
+          );
+          done();
+        });
+    });
+
+    it('eLiTe', function (done) {
+      request(app)
+        .post('/')
+        .send({ text: 'pongbot LeADeRBoaRD', user_name: 'WangHao' })
+        .expect(200)
+        .end(function(err, res) {
+          expect(res.body.text).to.eq(
+            "1. ZhangJike: 42 wins 24 losses (elo: 158)\n" +
+            "2. WangHao: 4 wins 3 losses (elo: 58)\n" +
+            "3. A: 20 wins 3 losses (elo: 57)\n" +
+            "4. B: 19 wins 3 losses (elo: 56)\n" +
+            "5. C: 18 wins 3 losses (elo: 55)\n"
+          );
+          done();
+        });
+    });
+    it('2', function (done) {
+      request(app)
+        .post('/')
+        .send({ text: 'pongbot leaderboard 2', user_name: 'WangHao' })
+        .expect(200)
+        .end(function(err, res) {
+          expect(res.body.text).to.eq(
+            "1. ZhangJike: 42 wins 24 losses (elo: 158)\n" +
+            "2. WangHao: 4 wins 3 losses (elo: 58)\n"
+          );
+          done();
+        });
+    });
+
   });
 
   describe('reset', function() {
@@ -275,7 +407,7 @@ describe('Routes', function () {
           .send({ text: 'pongbot reset WangHao invalid', user_name: 'WangHao' })
           .expect(200)
           .end(function(err, res) {
-            expect(res.body.text).to.eq("Invalid secret. Use 'pongbot reset _<username>_ _<secret>_.");
+            expect(res.body.text).to.eq("Invalid secret. Use _pongbot reset <username> <secret>_.");
             done();
           });
       });
@@ -308,7 +440,7 @@ describe('Routes', function () {
         .send({ text: 'pongbot new_season invalid', user_name: 'WangHao' })
         .expect(200)
         .end(function(err, res) {
-          expect(res.body.text).to.eq("Invalid secret. Use 'pongbot new_season _<secret>_.");
+          expect(res.body.text).to.eq("Invalid secret. Use _pongbot new_season <secret>_.");
           done();
         });
     });

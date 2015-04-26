@@ -1,5 +1,7 @@
 ### Changelog
 
+* 2015/04/26: [#54](https://github.com/andrewvy/slack-pongbot/issues/54) - Leaderboard Infinity is now case-insensitive - [@dblock](https://github.com/dblock).
+* 2015/04/26: [#56](https://github.com/andrewvy/slack-pongbot/issues/56) - Usernames are now case-insensitive - [@dblock](https://github.com/dblock).
 * 2015/04/26: [#37](https://github.com/andrewvy/slack-pongbot/issues/37) - Support @player - [@dblock](https://github.com/dblock).
 * 2015/04/25: [#40](https://github.com/andrewvy/slack-pongbot/issues/40) - Expose a Hypermedia API with pagination support - [@dblock](https://github.com/dblock).
 * 2015/04/24: [#55](https://github.com/andrewvy/slack-pongbot/pull/55) - API `matches` became `challenges` and `rankings` became `players` - [@dblock](https://github.com/dblock).
