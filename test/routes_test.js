@@ -20,7 +20,7 @@ describe('Routes', function () {
       .expect(200)
       .end(function(err, res){
         if (err) throw err;
-        expect(res.body.text).to.eq("I couldn't understand that command. Use 'pongbot help' to get a list of available commands.");
+        expect(res.body.text).to.eq("I couldn't understand that command. Use _pongbot help_ to get a list of available commands.");
       });
   });
 
@@ -76,7 +76,7 @@ describe('Routes', function () {
           .send({ text: 'pongbot challenge singles ZhangJike', user_name: 'WangHao' })
           .expect(200)
           .end(function(err, res) {
-            expect(res.body.text).to.eq("Player 'WangHao' does not exist. Are you registered? Use 'pongbot register' first.");
+            expect(res.body.text).to.eq("Player 'WangHao' does not exist. Are you registered? Use _pongbot register_ first.");
             done();
           });
       });
@@ -275,7 +275,7 @@ describe('Routes', function () {
           .send({ text: 'pongbot reset WangHao invalid', user_name: 'WangHao' })
           .expect(200)
           .end(function(err, res) {
-            expect(res.body.text).to.eq("Invalid secret. Use 'pongbot reset _<username>_ _<secret>_.");
+            expect(res.body.text).to.eq("Invalid secret. Use _pongbot reset <username> <secret>_.");
             done();
           });
       });
@@ -308,7 +308,7 @@ describe('Routes', function () {
         .send({ text: 'pongbot new_season invalid', user_name: 'WangHao' })
         .expect(200)
         .end(function(err, res) {
-          expect(res.body.text).to.eq("Invalid secret. Use 'pongbot new_season _<secret>_.");
+          expect(res.body.text).to.eq("Invalid secret. Use _pongbot new_season <secret>_.");
           done();
         });
     });
