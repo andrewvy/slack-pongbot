@@ -99,6 +99,17 @@ describe('Routes', function () {
             done();
           });
       });
+
+      it('creates a challenge with case insensitive usernames', function (done) {
+        request(app)
+          .post('/')
+          .send({ text: 'pongbot challenge singles zhangjike', user_name: 'wanghao' })
+          .expect(200)
+          .end(function(err, res) {
+            expect(res.body.text).to.startsWith("WangHao has challenged ZhangJike to a ping pong match!");
+            done();
+          });
+      });
     });
 
     describe('with four players', function () {
@@ -123,6 +134,17 @@ describe('Routes', function () {
         request(app)
           .post('/')
           .send({ text: 'pongbot challenge doubles ChenQi against ZhangJike ViktorBarna', user_name: 'WangHao' })
+          .expect(200)
+          .end(function(err, res) {
+            expect(res.body.text).to.startsWith("WangHao and ChenQi have challenged ZhangJike and ViktorBarna to a ping pong match!");
+            done();
+          });
+      });
+
+      it('creates a challenge with case-insensitive usernames', function (done) {
+        request(app)
+          .post('/')
+          .send({ text: 'pongbot challenge doubles chenQi against zhangJike viktorBarna', user_name: 'wangHao' })
           .expect(200)
           .end(function(err, res) {
             expect(res.body.text).to.startsWith("WangHao and ChenQi have challenged ZhangJike and ViktorBarna to a ping pong match!");
