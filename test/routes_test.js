@@ -39,15 +39,26 @@ describe('Routes', function () {
 
     describe('with a pre-registered player', function () {
       beforeEach(function (done) {
-        pong.registerPlayer('WangHao').then(function() {
+        pong.registerPlayer('WangHao', { user_id: 'U02BEFY4U' }).then(function() {
           done();
         });
       });
 
-      it('does not register twice', function (done) {
+      it('does not register twice by name', function (done) {
         request(app)
           .post('/')
           .send({ text: 'pongbot register', user_name: 'WangHao' })
+          .expect(200)
+          .end(function(err, res) {
+            expect(res.body.text).to.eq("You've already registered!");
+            done();
+          });
+      });
+
+      it('does not register twice by ID', function (done) {
+        request(app)
+          .post('/')
+          .send({ text: 'pongbot register', user_name: 'WangHaoWasRenamed', user_id: 'U02BEFY4U' })
           .expect(200)
           .end(function(err, res) {
             expect(res.body.text).to.eq("You've already registered!");

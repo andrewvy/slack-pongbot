@@ -40,14 +40,24 @@ describe('Pong', function () {
   describe('#findPlayer', function () {
     describe('with a player', function () {
       beforeEach(function (done) {
-        pong.registerPlayer('ZhangJike').then(function () {
+        pong.registerPlayer('ZhangJike', { user_id: 'U02BEFY4U' }).then(function () {
           done();
         });
       });
 
-      it('finds a player', function (done) {
+      it('finds a player by name', function (done) {
         pong.findPlayer('ZhangJike').then(function (player) {
           expect(player).not.to.be.null;
+          expect(player.user_id).to.eq('U02BEFY4U');
+          expect(player.user_name).to.eq('ZhangJike');
+          done();
+        });
+      });
+
+      it('finds a player by ID', function (done) {
+        pong.findPlayer('<@U02BEFY4U>').then(function (player) {
+          expect(player).not.to.be.null;
+          expect(player.user_id).to.eq('U02BEFY4U');
           expect(player.user_name).to.eq('ZhangJike');
           done();
         });
@@ -313,6 +323,12 @@ describe('Pong', function () {
   });
 
   describe('ensureUniquePlayers', function () {
+    beforeEach(function (done) {
+      pong.registerPlayers(['ZhangJike', 'DengYaping', 'ChenQi', 'ViktorBarna']).then(function () {
+        done();
+      });
+    });
+
     it('fails with a duplicate', function (done) {
       pong.ensureUniquePlayers(['ZhangJike', 'ZhangJike', 'ZhangJike', 'ChenQi']).then(undefined, function (err) {
         expect(err).to.not.be.null;
@@ -328,7 +344,6 @@ describe('Pong', function () {
       });
     });
   });
-
 
   describe('createSingleChallenge', function () {
     it('returns an error when the challenger cannot be found', function (done) {
