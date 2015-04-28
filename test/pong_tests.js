@@ -87,10 +87,9 @@ describe('Pong', function () {
   describe('#findPlayers', function () {
     describe('with two players', function () {
       beforeEach(function (done) {
-        pong.registerPlayers(['ZhangJike', 'DengYaping'])
-          .then(function () {
-            done();
-          });
+        pong.registerPlayers(['ZhangJike', 'DengYaping']).then(function () {
+          done();
+        });
       });
 
       it('finds both players', function (done) {
@@ -291,41 +290,30 @@ describe('Pong', function () {
           });
         });
       });
+    });
+  });
 
-      describe('with a challenge already set', function () {
-        beforeEach(function (done) {
-          pong.setChallenge(['ZhangJike'], challenge._id).then(function () {
+  describe('checkChallenge', function () {
+    describe('with a challenge already set', function () {
+      beforeEach(function (done) {
+        pong.registerPlayers(['ZhangJike', 'DengYaping']).then(function(players) {
+          pong.createSingleChallenge('ZhangJike', 'DengYaping').then(function (challenge) {
             done();
           });
         });
+      });
 
-        describe('with another challenge', function () {
-          var challenge2 = null;
-          beforeEach(function (done) {
-            challenge2 = new Challenge({
-              state: 'Proposed',
-              type: 'Singles',
-              date: Date.now(),
-              challenger: ['ZhangJike'],
-              challenged: ['DengYaping']
-            });
-            challenge2.save().then(function () {
-              done();
-            });
-          });
+      it('fails on check challenge from challenger', function(done) {
+        pong.checkChallenge(['ZhangJike', 'DengYaping']).then(undefined, function (err) {
+          expect(err.message).to.eq("There's already an active challenge between ZhangJike and DengYaping.");
+          done();
+        });
+      });
 
-          it('does not set challenge', function(done) {
-            pong.setChallenge(['ZhangJike', 'DengYaping'], challenge2._id).then(function(ok) {
-              }, function (err) {
-                expect(err.message).to.eq("There's already an active challenge between ZhangJike and DengYaping.");
-                pong.findPlayers(['ZhangJike', 'DengYaping']).then(function(players) {
-                  expect(players[0].currentChallenge.equals(challenge._id)).to.be.true;
-                  expect(players[1].currentChallenge).to.be.undefined;
-                }).then(function () {
-                  done();
-                });
-            });
-          });
+      it('fails on check challenge from chellenged', function(done) {
+        pong.checkChallenge(['DengYaping', 'ZhangJike']).then(undefined, function (err) {
+          expect(err.message).to.eq("There's already an active challenge between ZhangJike and DengYaping.");
+          done();
         });
       });
     });
@@ -712,9 +700,9 @@ describe('Pong', function () {
   });
 
   describe('calculateTeamElo', function () {
-    beforeEach('with two players', function (done) {
-      pong.registerPlayer('ZhangJike', { elo: 4 }).then(function (player1) {
-        pong.registerPlayer('DengYaping', { elo: 2 }).then(function (player2) {
+    beforeEach(function (done) {
+      pong.registerPlayer('ZhangJike', { elo: 4 }).then(function () {
+        pong.registerPlayer('DengYaping', { elo: 2 }).then(function () {
           done();
         });
       });

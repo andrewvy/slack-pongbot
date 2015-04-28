@@ -196,8 +196,21 @@ describe('Routes', function () {
             done();
           });
       });
-    });
 
+      it('cannot create an opposite challenge', function (done) {
+        request(app)
+          .post('/')
+          .send({ text: 'pongbot challenge singles WangHao', user_name: 'ZhangJike' })
+          .expect(200)
+          .end(function(err, res) {
+            expect(res.body.text).to.eq("Error: There's already an active challenge between WangHao and ZhangJike.");
+            Challenge.count().then(function (count) {
+              expect(count).to.eq(1);
+              done();
+            });
+          });
+      });
+    });
   });
 
   describe('won and lost', function() {
