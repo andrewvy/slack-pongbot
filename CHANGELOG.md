@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2015/04/27: [#64](https://github.com/andrewvy/slack-pongbot/issues/64) - Fix: challenge created even when another challenge already exists - [@dblock](https://github.com/dblock).
 * 2015/04/26: [#54](https://github.com/andrewvy/slack-pongbot/issues/54) - Leaderboard Infinity is now case-insensitive - [@dblock](https://github.com/dblock).
 * 2015/04/26: [#56](https://github.com/andrewvy/slack-pongbot/issues/56) - Usernames are now case-insensitive - [@dblock](https://github.com/dblock).
 * 2015/04/26: [#37](https://github.com/andrewvy/slack-pongbot/issues/37) - Support @player - [@dblock](https://github.com/dblock).
