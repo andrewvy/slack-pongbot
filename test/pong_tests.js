@@ -657,6 +657,30 @@ describe('Pong', function () {
           done();
         });
       });
+
+      describe('after it is accepted', function () {
+        beforeEach(function (done) {
+          pong.acceptChallenge('DengYaping').then(function (result) {
+            done();
+          });
+        });
+
+        it('chickens out of the challenge for the challenger', function (done) {
+          pong.chickenChallenge('ZhangJike').then(function (result) {
+            expect(result.message).to.eq("ZhangJike chickened out of the challenge against DengYaping.");
+            expect(result.challenge.state).to.eq('Chickened');
+            done();
+          });
+        });
+
+        it('chickens out of the challenge for the challenged', function (done) {
+          pong.chickenChallenge('DengYaping').then(function (result) {
+            expect(result.message).to.eq("DengYaping chickened out of the challenge against ZhangJike.");
+            expect(result.challenge.state).to.eq('Chickened');
+            done();
+          });
+        });
+      });
     });
 
     describe('with a doubles challenge', function () {
@@ -676,24 +700,64 @@ describe('Pong', function () {
         });
       });
 
-      it("can't chiceck out of the the challenge with player two", function (done) {
+      it("can't chicken out of the the challenge with player two", function (done) {
         pong.chickenChallenge('DengYaping').then(undefined, function (err) {
           expect(err.message).to.eq('Only ZhangJike can do that.');
           done();
         });
       });
 
-      it("can't chiceck out of the the challenge with player three", function (done) {
+      it("can't chicken out of the the challenge with player three", function (done) {
         pong.chickenChallenge('ChenQi').then(undefined, function (err) {
           expect(err.message).to.eq('Only ZhangJike can do that.');
           done();
         });
       });
 
-      it("can't chiceck out of the the challenge with player four", function (done) {
+      it("can't chicken out of the the challenge with player four", function (done) {
         pong.chickenChallenge('ViktorBarna').then(undefined, function (err) {
           expect(err.message).to.eq('Only ZhangJike can do that.');
           done();
+        });
+      });
+
+      describe('after it is accepted', function () {
+        beforeEach(function (done) {
+          pong.acceptChallenge('ChenQi').then(function (result) {
+            done();
+          });
+        });
+
+        it('chickens out of the challenge for the challenger', function (done) {
+          pong.chickenChallenge('ZhangJike').then(function (result) {
+            expect(result.message).to.eq("ZhangJike chickened out of the challenge against ChenQi and ViktorBarna.");
+            expect(result.challenge.state).to.eq('Chickened');
+            done();
+          });
+        });
+
+        it('chickens out of the challenge for player two', function (done) {
+          pong.chickenChallenge('DengYaping').then(function (result) {
+            expect(result.message).to.eq("DengYaping chickened out of the challenge against ChenQi and ViktorBarna.");
+            expect(result.challenge.state).to.eq('Chickened');
+            done();
+          });
+        });
+
+        it('chickens out of the challenge for player three', function (done) {
+          pong.chickenChallenge('ChenQi').then(function (result) {
+            expect(result.message).to.eq("ChenQi chickened out of the challenge against ZhangJike and DengYaping.");
+            expect(result.challenge.state).to.eq('Chickened');
+            done();
+          });
+        });
+
+        it('chickens out of the challenge for player four', function (done) {
+          pong.chickenChallenge('ViktorBarna').then(function (result) {
+            expect(result.message).to.eq("ViktorBarna chickened out of the challenge against ZhangJike and DengYaping.");
+            expect(result.challenge.state).to.eq('Chickened');
+            done();
+          });
         });
       });
     });
