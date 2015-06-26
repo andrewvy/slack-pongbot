@@ -28,12 +28,15 @@ git checkout -b my-feature-branch
 
 ## Bundle Install and Test
 
-Ensure that you can build the project and run tests.
+Ensure that you can build the project and run tests and linter.
 
 ```
 npm install
 npm test
+npm run lint
 ```
+
+**Note**: You will need a copy of [MongoDB](https://www.mongodb.org/downloads) running on `localhost` in order to run the tests.
 
 ## Write Tests
 
