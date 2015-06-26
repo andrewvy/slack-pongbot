@@ -62,7 +62,7 @@ pongbot lost
 # Other Commands
 
 * `pongbot decline` - Decline's any proposed match.
-* `pongbot chicken` - Chicken out of your own challenge.
+* `pongbot chicken` - Chicken out of your own challenge before it is accepted, or out of an accepted challenge (as the challenger or challenged).
 * `pongbot leaderboard <1-infinity>` - Shows the top players, sorted by Elo.
 * `pongbot rank <someone's name>` - Gets that person's stats. If none given, it will return your own stats.
 * `pongbot source` - Get's Pongbot's Github repository.
