@@ -181,4 +181,54 @@ describe('Routes', function () {
       });
     });
   });
+
+  describe('leaderboard', function () {
+    describe('with 3 players', function () {
+      beforeEach(function (done) {
+        pong.registerPlayers(['ZhangJike', 'DengYaping', 'ChenQi']).then().spread(function (p1, p2, p3) {
+          done();
+        });
+      });
+
+      describe('without challenge', function () {
+        it('returns no player', function (done) {
+          request(app)
+            .get('/leaderboard')
+            .expect(200)
+            .end(function(err, res) {
+              if (err) throw err;
+              var players = res.body._embedded.players;
+              expect(players.length).to.eq(0);
+              done();
+            });
+        });
+      });
+
+      describe('with 1 challenge', function () {
+        beforeEach(function (done) {
+          pong.createSingleChallenge('ZhangJike', 'DengYaping').then(function () {
+            pong.acceptChallenge('DengYaping').then(function () {
+              pong.lose('DengYaping').then(function () {
+                done();
+              });
+            });
+          });
+        });
+
+        it('returns 2 players', function (done) {
+          request(app)
+            .get('/leaderboard')
+            .expect(200)
+            .end(function(err, res) {
+              if (err) throw err;
+              var players = res.body._embedded.players;
+              expect(players.length).to.eq(2);
+              var player = players[0];
+              expect(player.user_name).to.eq('ZhangJike');
+              done();
+            });
+        });
+      });
+    });
+  });
 });

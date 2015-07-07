@@ -29,12 +29,12 @@
           <td>ELO</td>
         </tr>
         <tr ng-repeat="player in leaderboard">
-          <td>{{ player.rank }}</td>
-          <td><b>{{ player.name.substring(0, player.name.length - 1);  }}</b></td>
-          <td><b>{{ player.wins + player.loss }}</b></td>
+          <td>{{ ($index + 1) }}</td>
+          <td><b>{{ player.user_name  }}</b></td>
+          <td><b>{{ player.wins + player.losses }}</b></td>
           <td>{{ player.wins }}</td>
-          <td>{{ player.loss }}</td>
-          <td>{{ player.elo.substring(0, player.elo.length - 1);  }}</td>
+          <td>{{ player.losses }}</td>
+          <td>{{ player.elo  }}</td>
         </tr>
       </table>
 
@@ -95,23 +95,9 @@
       angular.module('pong', []);
       angular.module('pong')
       .controller('PongCtrl', function($scope, $http) {
-        $http.post('/', { text: 'pongbot leaderboard' })
+        $http.get('/leaderboard')
         .success(function(data) {
-          if (data.text === '') {
-            return;
-          }
-          $scope.leaderboard = data.text.split('\n');
-          angular.forEach($scope.leaderboard, function(player, index) {
-            var attributes = player.split(' ');
-            $scope.leaderboard[index] = {
-              rank: attributes[0],
-              name: attributes[1],
-              wins: parseInt(attributes[2]),
-              loss: parseInt(attributes[4]),
-              elo:  attributes[7]
-            };
-          });
-          $scope.leaderboard.pop();
+          $scope.leaderboard = data._embedded.players;
         });
       });
     </script>
