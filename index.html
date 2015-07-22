@@ -1,0 +1,105 @@
+<html lang="en" ng-app="pong">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Ping Pong Leaderboard</title>
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  </head>
+
+  <body>
+    <div class="container" ng-controller="PongCtrl">
+      <div class="page-header text-center">
+        <h1>Ping Pong</h1>
+      </div>
+
+      <h2>Leaderboard</h2>
+      <p class="lead" ng-if="!leaderboard">No one has registered yet!</p>
+      <table class="table table-striped table-bordered" ng-show="leaderboard">
+        <tr>
+          <td>Rank</td>
+          <td>Player Name</td>
+          <td>Games Played</td>
+          <td>Wins</td>
+          <td>Loss</td>
+          <td>ELO</td>
+        </tr>
+        <tr ng-repeat="player in leaderboard">
+          <td>{{ ($index + 1) }}</td>
+          <td><b>{{ player.user_name  }}</b></td>
+          <td><b>{{ player.wins + player.losses }}</b></td>
+          <td>{{ player.wins }}</td>
+          <td>{{ player.losses }}</td>
+          <td>{{ player.elo  }}</td>
+        </tr>
+      </table>
+
+      <h2>How to participate?</h2>
+      <div class="panel panel-default">
+        <div class="panel-heading"><b>Register first!</b></div>
+        <div class="panel-body">
+          Go to your ping-pong Slack channel and type <code>pongbot register</code>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">Challenge someone!</div>
+        <div class="panel-body">
+          <code>pongbot (challenge|vs) "player"</code>or
+          <br>
+          <code>pongbot (challenge|vs) doubles "teammate's name" (against|vs) "opponent_1" "opponent_2"</code>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">Accept or decline the challenge...</div>
+        <div class="panel-body">
+          <code>pongbot (ok|accept)</code>
+          <br>
+          <code>pongbot (no|decline)</code>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">Results?</div>
+        <div class="panel-body">
+          Only the loser can finish a game by typongbot <code>pongbot lost</code>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">See who is leading!</div>
+        <div class="panel-body">
+          <code>pongbot leaderboard</code>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">What else?</div>
+        <div class="panel-body">
+          <code>pongbot chicken</code> Chicken out of your own challenge before it is accepted, or out of an accepted challenge (as the challenger or challenged).
+          <br>
+          <code>pongbot rank "playername"</code> Gets that person's stats. If none given, it will return your own stats.</code>
+        </div>
+      </div>
+    </div>
+
+    <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.1/angular.min.js"></script>
+    <script type="text/javascript">
+      angular.module('pong', []);
+      angular.module('pong')
+      .controller('PongCtrl', function($scope, $http) {
+        $http.get('/leaderboard')
+        .success(function(data) {
+          $scope.leaderboard = data._embedded.players;
+        });
+      });
+    </script>
+  </body>
+</html>
