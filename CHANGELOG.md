@@ -1,5 +1,6 @@
 ### Changelog
 
+* 2015/07/22: [#67](https://github.com/andrewvy/slack-pongbot/pull/67) - Quality-of-life improvements to Challenges, and a new Leaderboards Endpoint - [@geoffrey](https://github.com/geoffrey).
 * 2015/06/25: [#66](https://github.com/andrewvy/slack-pongbot/pull/66) - Any player can `chicken` out of an accepted challenge - [@101100](https://github.com/101100).
 * 2015/04/27: [#64](https://github.com/andrewvy/slack-pongbot/issues/64) - Fix: challenge created even when another challenge already exists - [@dblock](https://github.com/dblock).
 * 2015/04/26: [#54](https://github.com/andrewvy/slack-pongbot/issues/54) - Leaderboard Infinity is now case-insensitive - [@dblock](https://github.com/dblock).
