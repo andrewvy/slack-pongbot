@@ -7,7 +7,8 @@ var ChallengeSchema = new Schema({
 	type: String,
 	date: Date,
 	challenger: Array,
-	challenged: Array
+	challenged: Array,
+	winner: Array
 });
 
 mongoosePages.anchor(ChallengeSchema);
@@ -27,6 +28,9 @@ ChallengeSchema.methods = {
         }),
         challenged: this.challenged.map(function(player) {
           return { href: req.rootUrl() + '/players/' + player };
+        }),
+        winner: this.winner.map(function(winner) {
+          return { href: req.rootUrl() + '/players/' + winner };
         })
       }
     };
