@@ -35,7 +35,11 @@ describe('Routes', function () {
           playerZhangJike = p2;
           pong.createSingleChallenge('WangHao', 'ZhangJike').then(function (result) {
             challengeBetweenWangHoeAndZhangJike = result.challenge;
-            done();
+            pong.acceptChallenge('ZhangJike').then(function () {
+              pong.lose('WangHao').then(function () {
+                done();
+              });
+            });
           });
         });
       });
@@ -49,10 +53,12 @@ describe('Routes', function () {
             var challenges = res.body._embedded.challenges;
             expect(challenges.length).to.eq(1);
             var challenge = challenges[0];
-            expect(challenge.state).to.eq('Proposed');
+            console.log(challenge);
+            expect(challenge.state).to.eq('Finished');
             expect(challenge.type).to.eq('Singles');
             expect(challenge._links.challengers[0].href).to.endsWith('/players/WangHao');
             expect(challenge._links.challenged[0].href).to.endsWith('/players/ZhangJike');
+            expect(challenge._links.winner[0].href).to.endsWith('/players/ZhangJike');
             done();
           });
       });
@@ -64,10 +70,11 @@ describe('Routes', function () {
           .end(function(err, res) {
             if (err) throw err;
             var challenge = res.body;
-            expect(challenge.state).to.eq('Proposed');
+            expect(challenge.state).to.eq('Finished');
             expect(challenge.type).to.eq('Singles');
             expect(challenge._links.challengers[0].href).to.endsWith('/players/WangHao');
             expect(challenge._links.challenged[0].href).to.endsWith('/players/ZhangJike');
+            expect(challenge._links.winner[0].href).to.endsWith('/players/ZhangJike');
             done();
           });
       });
