@@ -36,7 +36,7 @@ npm test
 npm run lint
 ```
 
-**Note**: You will need a copy of [MongoDB](https://www.mongodb.org/downloads) running on `localhost` in order to run the tests.
+**Note**: You will need a copy of [MongoDB](https://www.mongodb.org/downloads) running on `localhost` in order to run the tests. You can learn how to install MongoDB and run it on `localhost` by opening the [Installation](http://docs.mongodb.org/master/installation/) section of the manual and then choosing “Install on [your OS]” from the sidebar at the left.
 
 ## Write Tests
 
