@@ -1,6 +1,6 @@
 {
   "name": "pongbot",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "dependencies": {
     "body-parser": {
       "version": "1.12.3",

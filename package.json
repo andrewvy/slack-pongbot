@@ -1,6 +1,6 @@
 {
   "name": "pongbot",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "Pongbot for Slack.",
   "main": "app.js",
   "dependencies": {
@@ -39,6 +39,6 @@
     "url": "https://github.com/andrewvy/slack-pongbot.git"
   },
   "bugs": {
-    "url" : "https://github.com/andrewvy/slack-pongbot/issues"
+    "url": "https://github.com/andrewvy/slack-pongbot/issues"
   }
 }
