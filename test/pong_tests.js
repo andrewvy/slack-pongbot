@@ -310,10 +310,20 @@ describe('Pong', function () {
         });
       });
 
-      it('fails on check challenge from chellenged', function(done) {
+      it('fails on check challenge from challenged', function(done) {
         pong.checkChallenge(['DengYaping', 'ZhangJike']).then(undefined, function (err) {
           expect(err.message).to.eq("There's already an active challenge between ZhangJike and DengYaping.");
           done();
+        });
+      });
+
+      it('it succeeds on check challenge when chickened', function(done) {
+        pong.chickenChallenge('ZhangJike').then(function(err) {
+          expect(err.message).to.eq("ZhangJike chickened out of a challenge against DengYaping.");
+          pong.createSingleChallenge('ZhangJike', 'DengYaping').then(function (result) {
+            expect(result.message).to.eq("ZhangJike has challenged DengYaping to a ping pong match!");
+            done();
+          });
         });
       });
     });
