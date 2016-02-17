@@ -10,9 +10,11 @@ I highly recommend checking out one of these alternatives:
 
 ## Hosted alternatives
 
+- [Playplay.io](http://playplay.io)
 - [Pinpon](https://pinpon.co)
 
 # Pongbot
+
 Slack Bot for Ping Pong tracking.
 
 [![Build Status](https://travis-ci.org/andrewvy/slack-pongbot.svg?branch=master)](https://travis-ci.org/andrewvy/slack-pongbot)
