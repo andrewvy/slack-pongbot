@@ -2,6 +2,8 @@
 
 This repo was never meant to be public, I just happened to throw code together in a span of a day to have something fun. Unfortunately, the code quality is terrible and not fit for open source contributions.
 
+I highly recommend checking out one of these alternatives:
+
 ## Open source alternatives
 
 - [slack-gamebot](https://github.com/dblock/slack-gamebot)
